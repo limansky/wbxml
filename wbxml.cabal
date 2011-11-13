@@ -1,0 +1,14 @@
+Name: wbxml
+Version:            0.0.1
+Cabal-Version:      >= 1.10
+License:            BSD3
+License-File:       LICENSE
+Author:             Mike Limansky
+Synopsis:           WBXML parsing library
+Build-Type:         Simple
+
+Library
+    Build-Depends:      base, attoparsec, bytestring
+    Default-Language:   Haskell2010
+    Exposed-Modules:    Tables, Parser
+    hs-source-dirs:     src

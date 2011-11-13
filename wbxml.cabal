@@ -8,7 +8,7 @@ Synopsis:           WBXML parsing library
 Build-Type:         Simple
 
 Library
-    Build-Depends:      base, attoparsec, bytestring
+    Build-Depends:      base, bytestring, attoparsec, attoparsec-binary
     Default-Language:   Haskell2010
     Exposed-Modules:    Tables, Parser
     hs-source-dirs:     src

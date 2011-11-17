@@ -12,7 +12,7 @@ module Parser where
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as C
 import Data.Attoparsec as A
-import Control.Monad (liftM)
+import Control.Monad (liftM, liftM2)
 import Data.Word
 import Data.Bits
 
@@ -30,14 +30,33 @@ data WbxmlDocument = WbxmlDocument {
         , documentTable :: String
     } deriving (Show)
 
+tokenSwitchPage = 0x0
+tokenEnd = 0x1
+tokenEntity = 0x2
+tokenStrI = 0x3
+tokenLiteral = 0x4
+tokenExtI0 = 0x40
+tokenExtI1 = 0x41
+tokenExtI2 = 0x42
+tokenPI = 0x43
+tokenLiteralC = 0x44
+tokenExtT0 = 0x80
+tokenExtT1 = 0x81
+tokenExtT2 = 0x82
+tokenStrT = 0x83
+tokenLiteralA = 0x84
+tokenExt0 = 0xC0
+tokenExt1 = 0xC1
+tokenExt2 = 0xC2
+tokenOpaque = 0xC3
+tokenLiteralAc = 0xC4
+
 knownCharsets = [ (106, UTF8) ]
 
 anyMultiByteWord :: Parser Word32
 anyMultiByteWord = do
-    first <- A.takeWhile (\x -> x .&. 0x80 /= 0)
-    last <- anyWord8
-    let s = B.foldl combine 0 first 
-        in return $ combine s last
+    bytes <- liftM2 B.snoc (A.takeWhile (\x -> x .&. 0x80 /= 0)) anyWord8
+    return $ B.foldl combine 0 bytes
         where combine x y = (x `shiftL` 7) .|. ((fromIntegral y) .&. 0x7f)
               
 

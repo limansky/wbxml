@@ -7,7 +7,7 @@
 --
 ----------------------------------------------------------------------
 
-module Parser where
+module Wbxml.Parser where
 
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as C

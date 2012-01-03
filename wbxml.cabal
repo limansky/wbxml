@@ -10,5 +10,5 @@ Build-Type:         Simple
 Library
     Build-Depends:      base, bytestring, attoparsec, attoparsec-binary, transformers >= 0.2, mtl >= 2
     Default-Language:   Haskell2010
-    Exposed-Modules:    Tables, Parser
+    Exposed-Modules:    Wbxml.Tables, Wbxml.Parser
     hs-source-dirs:     src

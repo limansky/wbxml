@@ -1,0 +1,6 @@
+Wbxml : tiny Haskell library for Wbxml parsing
+
+        http://github.com/limansky/wbxml
+
+    This library provides API for parsing and generating WBXML format
+    (see http://www.w3.org/TR/wbxml/ to get more information).

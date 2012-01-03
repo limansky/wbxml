@@ -19,6 +19,7 @@ import Data.Word
 import Data.Char (chr)
 import Data.Bits
 import Numeric (showHex)
+import Wbxml.Tables
 
 data WbxmlVersion = Version1_0 | Version1_1 | Version1_2 | Version1_3
     deriving (Show, Eq, Enum)
@@ -64,12 +65,19 @@ data ParseState = ParseState {
 
 type WbxmlParser = StateT ParseState Parser
 
-{-
-tryS :: WbxmlParser a -> WbxmlParser a
-tryS wp = do
-    (p, s) <- runStateT wp (ParseState 0)
-    return s
--}
+renderWbxml :: WbxmlDocument -> WbxmlTable -> String
+renderWbxml d t = renderWbxmlTree (documentRoot d) t 0
+
+renderWbxmlTree (WbxmlTag p c [] "") t n = (replicate n ' ') ++ "<" ++ (tagNameOrCode t p c) ++ "/>\n"
+renderWbxmlTree (WbxmlTag p c [] v ) t n = (replicate n ' ') ++ "<" ++ name ++ ">" ++ v ++ "</" ++ name ++ ">\n"
+    where name = tagNameOrCode t p c
+renderWbxmlTree (WbxmlTag p c ch "") t n = (replicate n ' ') ++ "<" ++ name ++ ">\n" ++ concat (map (\x -> renderWbxmlTree x t (n + 1)) ch) 
+                                        ++ (replicate n ' ') ++ "</" ++ name ++ ">\n"
+    where name = tagNameOrCode t p c
+
+tagNameOrCode t p c = case findTag t p c of
+    Just s -> s
+    Nothing -> "Unknown(" ++ (show p) ++ ", " ++ (show c) ++")"
 
 tokenSwitchPage = 0x0
 tokenEnd = 0x1
@@ -157,10 +165,12 @@ parseTag = do
     (ParseState page) <- get
     code <- lift $ satisfy (not . flip elem controlTokens)
     attrs <- if (code .&. 0x80 /= 0) then parseAttrs else return []
-    content <- if (code .&. 0x40 /= 0) then (many $ choice [ lift parseIString
-                                                           , parseTag ])
+    content <- if (code .&. 0x40 /= 0) then do
+                                            c <- (many $ choice [ lift parseIString
+                                                                , parseTag ])
+                                            lift $ skip (==tokenEnd)
+                                            return c
                                        else return []
-    when (code .&. 0x40 /= 0) (lift $ skip (==tokenEnd))
     let chld = [ x | Tag x <- content ]
         val  = concat $ [ x | Str x <- content ]
     return . Tag $ WbxmlTag page (code .&. 0x3f) chld val

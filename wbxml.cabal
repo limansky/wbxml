@@ -4,8 +4,10 @@ Cabal-Version:      >= 1.10
 License:            BSD3
 License-File:       LICENSE
 Author:             Mike Limansky
+maintainer:         mike.limansky@gmail.com
 Synopsis:           WBXML parsing library
 Build-Type:         Simple
+extra-source-files: README
 
 Library
     Build-Depends:      base, bytestring, attoparsec, attoparsec-binary, transformers >= 0.2, mtl >= 2

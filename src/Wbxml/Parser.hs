@@ -167,7 +167,7 @@ parseTag = do
     attrs <- if (code .&. 0x80 /= 0) then parseAttrs else return []
     content <- if (code .&. 0x40 /= 0) then do
                                             c <- (many $ choice [ lift parseIString
-                                                                , parseTag ])
+                                                                , parseElement ])
                                             lift $ skip (==tokenEnd)
                                             return c
                                        else return []

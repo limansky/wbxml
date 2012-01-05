@@ -15,6 +15,7 @@ import Data.Attoparsec as A
 import Control.Monad (liftM, liftM2, when)
 import Control.Monad.Trans (lift)
 import Control.Monad.Trans.State
+import Control.Applicative ((<|>))
 import Data.Word
 import Data.Char (chr)
 import Data.Bits
@@ -38,18 +39,34 @@ data WbxmlHeader = WbxmlHeader {
 data WbxmlTag = WbxmlTag {
           tagPage :: Word8
         , tagCode :: Word8
+        , tagAttrs :: [WbxmlAttribute]
         , tagChildren :: [WbxmlTag]
         , tagValue :: String
     }
+
+data WbxmlAttribute = KnownAttribute {
+          attrPage :: Word8
+        , attrCode :: Word8
+        , attrValue :: [WbxmlAttributeValue]
+    }
+                    | UnknownAttrute -- TBD
+    deriving (Show)
+
+data WbxmlAttributeValue = AttrValueString String
+                         | AttrValueKnown Word8 Word8
+                         | AttrValueOpaque B.ByteString
+    deriving (Show)
 
 data TagContent = Tag WbxmlTag 
                 | Str String 
                 deriving (Show)
 
 instance Show WbxmlTag where
-    show (WbxmlTag p c ch v) = "{0x" ++ (hex p) ++ ", 0x" ++ (hex c) 
-                                ++ (showIf (not . null $ v) (", value: \"" ++ v ++ "\"")) 
-                                ++ (showIf (not . null $ ch) (", " ++ show ch)) ++ "}"
+    show (WbxmlTag p c a ch v) = "{0x" ++ (hex p) ++ ", 0x" ++ (hex c)
+                                ++ (showIf (not . null $ a) (", attrs =" ++ show a))
+                                ++ (showIf (not . null $ v) (", value: \"" ++ v ++ "\""))
+                                ++ (showIf (not . null $ ch) (", " ++ show ch))
+                                ++ "}"
         where hex x = showHex x ""
               showIf True v  = v
               showIf False _ = ""
@@ -68,10 +85,10 @@ type WbxmlParser = StateT ParseState Parser
 renderWbxml :: WbxmlDocument -> WbxmlTable -> String
 renderWbxml d t = renderWbxmlTree (documentRoot d) t 0
 
-renderWbxmlTree (WbxmlTag p c [] "") t n = (replicate n ' ') ++ "<" ++ (tagNameOrCode t p c) ++ "/>\n"
-renderWbxmlTree (WbxmlTag p c [] v ) t n = (replicate n ' ') ++ "<" ++ name ++ ">" ++ v ++ "</" ++ name ++ ">\n"
+renderWbxmlTree (WbxmlTag p c _ [] "") t n = (replicate n ' ') ++ "<" ++ (tagNameOrCode t p c) ++ "/>\n"
+renderWbxmlTree (WbxmlTag p c _ [] v ) t n = (replicate n ' ') ++ "<" ++ name ++ ">" ++ v ++ "</" ++ name ++ ">\n"
     where name = tagNameOrCode t p c
-renderWbxmlTree (WbxmlTag p c ch "") t n = (replicate n ' ') ++ "<" ++ name ++ ">\n" ++ concat (map (\x -> renderWbxmlTree x t (n + 1)) ch) 
+renderWbxmlTree (WbxmlTag p c _ ch "") t n = (replicate n ' ') ++ "<" ++ name ++ ">\n" ++ concat (map (\x -> renderWbxmlTree x t (n + 1)) ch) 
                                         ++ (replicate n ' ') ++ "</" ++ name ++ ">\n"
     where name = tagNameOrCode t p c
 
@@ -115,6 +132,14 @@ anyMultiByteWord = do
     return $ B.foldl combine 0 bytes
         where combine x y = (x `shiftL` 7) .|. ((fromIntegral y) .&. 0x7f)
 
+parseNonControlToken = satisfy (not . flip elem controlTokens)
+
+parseIString = do
+    word8 tokenStrI
+    val <- A.takeWhile (/=0)
+    word8 0
+    return $ map (chr . fromIntegral) (B.unpack val)
+
 parseDocument :: WbxmlParser WbxmlDocument
 parseDocument = do
     header <- lift parseHeader
@@ -153,7 +178,6 @@ parseElement = do
     skipMany parseSwitchPage
     parseTag
 
---parseSwitchPage :: WbxmlParser ()
 parseSwitchPage = do
     lift $ word8 tokenSwitchPage
     page <- lift anyWord8
@@ -163,27 +187,44 @@ parseSwitchPage = do
 
 parseTag = do
     (ParseState page) <- get
-    code <- lift $ satisfy (not . flip elem controlTokens)
-    attrs <- if (code .&. 0x80 /= 0) then parseAttrs else return []
+    code <- lift $ parseNonControlToken
+    attrs <- if (code .&. 0x80 /= 0) then lift $ parseAttrs page else return []
     content <- if (code .&. 0x40 /= 0) then do
-                                            c <- (many $ choice [ lift parseIString
+                                            c <- (many $ choice [ lift parseStringContent
                                                                 , parseElement ])
                                             lift $ skip (==tokenEnd)
                                             return c
                                        else return []
     let chld = [ x | Tag x <- content ]
         val  = concat $ [ x | Str x <- content ]
-    return . Tag $ WbxmlTag page (code .&. 0x3f) chld val
+    return . Tag $ WbxmlTag page (code .&. 0x3f) attrs chld val
 
-parseIString = do
-    word8 tokenStrI
-    val <- A.takeWhile (/=0)
-    word8 0
-    return $ Str (map (chr . fromIntegral) (B.unpack val))
+parseStringContent = parseIString >>= return . Str
 
+parseAttrs page = do
+    attrs <- many $ parseAttr page
+    word8 tokenEnd
+    return attrs
 
 --  attribute   = attrStart *attrValue
---  attrStart   = ATTRSTART | ( LITERAL index )
---  attrValue   = ATTRVALUE | string | extension | entity
-parseAttrs = undefined
+parseAttr page = do
+    attr <- parseAttrStart
+    value <- parseAttrValue page
+    return $ KnownAttribute page attr value
 
+--  attrStart   = ATTRSTART | ( LITERAL index )
+parseAttrStart = satisfy (\c -> c < 128 && not (c `elem` controlTokens)) -- FIXME unknown attributes are not supported
+
+--  attrValue   = ATTRVALUE | string | extension | entity
+parseAttrValue page = many $ parseStringAttrValue 
+                         <|> parseOpaqueAttrValue
+                         <|> parseKnownAttrValue page
+
+parseKnownAttrValue page = satisfy (\c -> c >= 128 && not (c `elem` controlTokens)) >>= \c -> return $ AttrValueKnown page c
+parseStringAttrValue = parseIString >>= return . AttrValueString
+parseOpaqueAttrValue = parseOpaqueData >>= return . AttrValueOpaque
+
+parseOpaqueData = do
+    word8 tokenOpaque
+    len <- anyMultiByteWord
+    A.take $ fromIntegral len

@@ -82,7 +82,7 @@ data ParseState = ParseState {
 
 type WbxmlParser = StateT ParseState Parser
 
-renderWbxml :: WbxmlDocument -> WbxmlTable -> String
+renderWbxml :: WbxmlDocument -> WbxmlTagTable -> String
 renderWbxml d t = renderWbxmlTree (documentRoot d) t 0
 
 renderWbxmlTree (WbxmlTag p c _ [] "") t n = (replicate n ' ') ++ "<" ++ (tagNameOrCode t p c) ++ "/>\n"

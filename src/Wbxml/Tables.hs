@@ -584,6 +584,240 @@ co10AttrValueTable =
     )]
 
 
+---------------------------------------------------------------
+--    PROV 1.0
+--      WAP 2.0: "WAP-183-PROVCONT-20010724-a.pdf"
+--      OMA: "OMA-WAP-ProvCont-v1_1-20021112-C.PDF"
+--
+--    PROV 1.1
+--      OMA: OMA-WAP-ProvCont-v1_1-20050428-Cchangebars.doc
+--      There is no new Public ID defined for this new version,
+--      so how should we handle this ??
+---------------------------------------------------------------
+
+prov11TagTable :: WbxmlTagTable
+prov11TagTable =
+    [ (0x00, [ (0x05, "wap-provisioningdoc")
+             , (0x06, "characteristic")
+             , (0x07, "parm")
+             ])
+    , (0x01, [ (0x06, "characteristic") -- OMA
+             , (0x07, "parm") -- OMA
+             ])
+    ]
+
+prov11AttrTable :: WbxmlAttrTable
+prov11AttrTable =
+    -- Parm
+    [ (0x00, [ (0x05, "name", "")
+             , (0x06, "value", "")
+             , (0x07, "name", "NAME")
+             , (0x08, "name", "NAP-ADDRESS")
+             , (0x09, "name", "NAP-ADDRTYPE")
+             , (0x0a, "name", "CALLTYPE")
+             , (0x0b, "name", "VALIDUNTIL")
+             , (0x0c, "name", "AUTHTYPE")
+             , (0x0d, "name", "AUTHNAME")
+             , (0x0e, "name", "AUTHSECRET")
+             , (0x0f, "name", "LINGER")
+             , (0x10, "name", "BEARER")
+             , (0x11, "name", "NAPID")
+             , (0x12, "name", "COUNTRY")
+             , (0x13, "name", "NETWORK")
+             , (0x14, "name", "INTERNET")
+             , (0x15, "name", "PROXY-ID")
+             , (0x16, "name", "PROXY-PROVIDER-ID")
+             , (0x17, "name", "DOMAIN")
+             , (0x18, "name", "PROVURL")
+             , (0x19, "name", "PXAUTH-TYPE")
+             , (0x1a, "name", "PXAUTH-ID")
+             , (0x1b, "name", "PXAUTH-PW")
+             , (0x1c, "name", "STARTPAGE")
+             , (0x1d, "name", "BASAUTH-ID")
+             , (0x1e, "name", "BASAUTH-PW")
+             , (0x1f, "name", "PUSHENABLED")
+             , (0x20, "name", "PXADDR")
+             , (0x21, "name", "PXADDRTYPE")
+             , (0x22, "name", "TO-NAPID")
+             , (0x23, "name", "PORTNBR")
+             , (0x24, "name", "SERVICE")
+             , (0x25, "name", "LINKSPEED")
+             , (0x26, "name", "DNLINKSPEED")
+             , (0x27, "name", "LOCAL-ADDR")
+             , (0x28, "name", "LOCAL-ADDRTYPE")
+             , (0x29, "name", "CONTEXT-ALLOW")
+             , (0x2a, "name", "TRUST")
+             , (0x2b, "name", "MASTER")
+             , (0x2c, "name", "SID")
+             , (0x2d, "name", "SOC")
+             , (0x2e, "name", "WSP-VERSION")
+             , (0x2f, "name", "PHYSICAL-PROXY-ID")
+             , (0x30, "name", "CLIENT-ID")
+             , (0x31, "name", "DELIVERY-ERR-SDU")
+             , (0x32, "name", "DELIVERY-ORDER")
+             , (0x33, "name", "TRAFFIC-CLASS")
+             , (0x34, "name", "MAX-SDU-SIZE")
+             , (0x35, "name", "MAX-BITRATE-UPLINK")
+             , (0x36, "name", "MAX-BITRATE-DNLINK")
+             , (0x37, "name", "RESIDUAL-BER")
+             , (0x38, "name", "SDU-ERROR-RATIO")
+             , (0x39, "name", "TRAFFIC-HANDL-PRIO")
+             , (0x3a, "name", "TRANSFER-DELAY")
+             , (0x3b, "name", "GUARANTEED-BITRATE-UPLINK")
+             , (0x3c, "name", "GUARANTEED-BITRATE-DNLINK")
+             , (0x3d, "name", "PXADDR-FQDN") -- OMA
+             , (0x3e, "name", "PROXY-PW") -- OMA
+             , (0x3f, "name", "PPGAUTH-TYPE") -- OMA
+             , (0x47, "name", "PULLENABLED") -- OMA
+             , (0x48, "name", "DNS-ADDR") -- OMA
+             , (0x49, "name", "MAX-NUM-RETRY") -- OMA
+             , (0x4a, "name", "FIRST-RETRY-TIMEOUT") -- OMA
+             , (0x4b, "name", "REREG-THRESHOLD") -- OMA
+             , (0x4c, "name", "T-BIT") -- OMA
+             , (0x4e, "name", "AUTH-ENTITY") -- OMA
+             , (0x4f, "name", "SPI") -- OMA
+
+    -- Wap-provisioningdoc
+             , (0x45, "version", "")
+             , (0x46, "version", "1.0")
+
+    -- Characteristic
+             , (0x50, "type", "")
+             , (0x51, "type", "PXLOGICAL")
+             , (0x52, "type", "PXPHYSICAL")
+             , (0x53, "type", "PORT")
+             , (0x54, "type", "VALIDITY")
+             , (0x55, "type", "NAPDEF")
+             , (0x56, "type", "BOOTSTRAP")
+             , (0x57, "type", "VENDORCONFIG")
+             , (0x58, "type", "CLIENTIDENTITY")
+             , (0x59, "type", "PXAUTHINFO")
+             , (0x5a, "type", "NAPAUTHINFO")
+             , (0x5b, "type", "ACCESS") -- OMA
+             ])
+    , (0x01, [ (0x05, "name", "") -- OMA
+             , (0x06, "value", "") -- OMA
+             , (0x07, "name", "NAME") -- OMA
+             , (0x14, "name", "INTERNET") -- OMA
+             , (0x1c, "name", "STARTPAGE") -- OMA
+             , (0x22, "name", "TO-NAPID") -- OMA
+             , (0x23, "name", "PORTNBR") -- OMA
+             , (0x24, "name", "SERVICE") -- OMA
+             , (0x2e, "name", "AACCEPT") -- OMA
+             , (0x2f, "name", "AAUTHDATA") -- OMA
+             , (0x30, "name", "AAUTHLEVEL") -- OMA
+             , (0x31, "name", "AAUTHNAME") -- OMA
+             , (0x32, "name", "AAUTHSECRET") -- OMA
+             , (0x33, "name", "AAUTHTYPE") -- OMA
+             , (0x34, "name", "ADDR") -- OMA
+             , (0x35, "name", "ADDRTYPE") -- OMA
+             , (0x36, "name", "APPID") -- OMA
+             , (0x37, "name", "APROTOCOL") -- OMA
+             , (0x38, "name", "PROVIDER-ID") -- OMA
+             , (0x39, "name", "TO-PROXY") -- OMA
+             , (0x3a, "name", "URI") -- OMA
+             , (0x3b, "name", "RULE") -- OMA
+             , (0x50, "type", "") -- OMA
+             , (0x53, "type", "PORT") -- OMA
+             , (0x58, "type", "CLIENTIDENTITY") -- OMA
+             , (0x55, "type", "APPLICATION") -- OMA
+             , (0x56, "type", "APPADDR") -- OMA
+             , (0x57, "type", "APPAUTH") -- OMA
+             , (0x59, "type", "RESOURCE") -- OMA
+             ])
+    ]
+
+prov11AttrValueTable :: WbxmlAttrValueTable
+prov11AttrValueTable =
+    -- ADDRTYPE
+    [ (0x00, [ (0x85, "IPV4")
+             , (0x86, "IPV6")
+             , (0x87, "E164")
+             , (0x88, "ALPHA")
+             , (0x89, "APN")
+             , (0x8a, "SCODE")
+             , (0x8b, "TETRA-ITSI")
+             , (0x8c, "MAN")
+
+    -- CALLTYPE
+             , (0x90, "ANALOG-MODEM")
+             , (0x91, "V.120")
+             , (0x92, "V.110")
+             , (0x93, "X.31")
+             , (0x94, "BIT-TRANSPARENT")
+             , (0x95, "DIRECT-ASYNCHRONOUS-DATA-SERVICE")
+
+    -- AUTHTYPE/PXAUTH-TYPE
+             , (0x9a, "PAP")
+             , (0x9b, "CHAP")
+             , (0x9c, "HTTP-BASIC")
+             , (0x9d, "HTTP-DIGEST")
+             , (0x9e, "WTLS-SS")
+             , (0x9f, "MD5") -- OMA
+
+    -- BEARER
+             , (0xa2, "GSM-USSD")
+             , (0xa3, "GSM-SMS")
+             , (0xa4, "ANSI-136-GUTS")
+             , (0xa5, "IS-95-CDMA-SMS")
+             , (0xa6, "IS-95-CDMA-CSD")
+             , (0xa7, "IS-95-CDMA-PACKET")
+             , (0xa8, "ANSI-136-CSD")
+             , (0xa9, "ANSI-136-GPRS")
+             , (0xaa, "GSM-CSD")
+             , (0xab, "GSM-GPRS")
+             , (0xac, "AMPS-CDPD")
+             , (0xad, "PDC-CSD")
+             , (0xae, "PDC-PACKET")
+             , (0xaf, "IDEN-SMS")
+             , (0xb0, "IDEN-CSD")
+             , (0xb1, "IDEN-PACKET")
+             , (0xb2, "FLEX/REFLEX")
+             , (0xb3, "PHS-SMS")
+             , (0xb4, "PHS-CSD")
+             , (0xb5, "TRETRA-SDS")
+             , (0xb6, "TRETRA-PACKET")
+             , (0xb7, "ANSI-136-GHOST")
+             , (0xb8, "MOBITEX-MPAK")
+             , (0xb9, "CDMA2000-1X-SIMPLE-IP") -- OMA
+             , (0xba, "CDMA2000-1X-MOBILE-IP") -- OMA
+
+    -- LINKSPEED
+             , (0xc5, "AUTOBAUDING")
+
+    -- SERVICE
+             , (0xca, "CL-WSP")
+             , (0xcb, "CO-WSP")
+             , (0xcc, "CL-SEC-WSP")
+             , (0xcd, "CO-SEC-WSP")
+             , (0xce, "CL-SEC-WTA")
+             , (0xcf, "CO-SEC-WTA")
+             , (0xd0, "OTA-HTTP-TO") -- OMA
+             , (0xd1, "OTA-HTTP-TLS-TO") -- OMA
+             , (0xd2, "OTA-HTTP-PO") -- OMA
+             , (0xd3, "OTA-HTTP-TLS-PO") -- OMA
+    -- AUTH-ENTITY
+             , (0xe0, "AAA") -- OMA
+             , (0xe1, "HA") -- OMA
+             ])
+
+    -- ADDRTYPE 
+    , (0x01, [ (0x86, "IPV6") -- OMA
+             , (0x87, "E164") -- OMA
+             , (0x88, "ALPHA") -- OMA
+             , (0x8d, "APPSRV") -- OMA
+             , (0x8e, "OBEX") -- OMA
+
+    -- AAUTHTYPE
+             , (0x90, ",") -- OMA
+             , (0x91, "HTTP-") -- OMA
+             , (0x92, "BASIC") -- OMA
+             , (0x93, "DIGEST") -- OMA
+             ])
+    ]
+    
+
+
 
 
 

@@ -1,6 +1,13 @@
-Wbxml : tiny Haskell library for Wbxml parsing
+Wbxml : tiny Haskell library for WBXML processing
 
         http://github.com/limansky/wbxml
 
     This library provides API for parsing and generating WBXML format
     (see http://www.w3.org/TR/wbxml/ to get more information).
+
+    WBXML Tables definition is created based on libwbxml 0.11 sources
+    (see http://libwbxml.opensync.org/).
+
+    Current status of this project is early development.  So the API is
+    not stabilized, not all WBXML features are supported.  Please contact
+    me in case you are going to use it in real project.

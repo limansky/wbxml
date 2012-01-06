@@ -484,6 +484,120 @@ channel12AttrTable =
              ]
     )]
 
+--------------------------------------------------
+--    SI 1.0 ("WAP-167-ServiceInd-20010731-a.pdf")
+--------------------------------------------------
+si10TagTable :: WbxmlTagTable
+si10TagTable =
+    [ (0x00, [ (0x05, "si")
+             , (0x06, "indication")
+             , (0x07, "info")
+             , (0x08, "item")
+             ]
+    )]
+
+si10AttrTable :: WbxmlAttrTable
+si10AttrTable =
+    [ (0x00, [ (0x05, "action", "signal-none")
+             , (0x06, "action", "signal-low")
+             , (0x07, "action", "signal-medium")
+             , (0x08, "action", "signal-high")
+             , (0x09, "action", "delete")
+             , (0x0a, "created", "")
+             , (0x0b, "href", "")
+             , (0x0d, "href", "http://www.")
+             , (0x0c, "href", "http://")
+             , (0x0f, "href", "https://www.")
+             , (0x0e, "href", "https://")    
+             , (0x10, "si-expires", "")
+             , (0x11, "si-id", "")
+             , (0x12, "class", "")
+             ]
+    )]
+
+si10AttrValueTable :: WbxmlAttrValueTable
+si10AttrValueTable =
+    [ (0x00, [ (0x85, ".com/")
+             , (0x86, ".edu/")
+             , (0x87, ".net/")
+             , (0x88, ".org/")
+             ]
+    )]
+
+---------------------------------------------------
+--    SL 1.0 ("WAP-168-ServiceLoad-20010731-a.pdf")
+---------------------------------------------------
+sl10TagTable :: WbxmlTagTable
+sl10TagTable =
+    [ (0x00, [ (0x05, "sl") ] ) ]
+
+sl10AttrTable :: WbxmlAttrTable
+sl10AttrTable =
+    [ (0x00, [ (0x05, "action", "execute-low")
+             , (0x06, "action", "execute-high")
+             , (0x07, "action", "cache")
+             , (0x08, "href", "")
+             , (0x0a, "href", "http://www.")
+             , (0x09, "href", "http://")
+             , (0x0c, "href", "https://www.")
+             , (0x0b, "href", "https://")    
+             ]
+    )]
+
+sl10AttrValueTable :: WbxmlAttrValueTable
+sl10AttrValueTable =
+    [ (0x00, [ (0x85, ".com/")
+             , (0x86, ".edu/")
+             , (0x87, ".net/")
+             , (0x88, ".org/")
+             ]
+    )]
+
+-----------------------------------------------
+--    CO 1.0 ("WAP-175-CacheOp-20010731-a.pdf")
+-----------------------------------------------
+co10TagTable :: WbxmlTagTable
+co10TagTable =
+    [ (0x00, [ (0x05, "co")
+             , (0x06, "invalidate-object")
+             , (0x07, "invalidate-service")
+             ]
+    )]
+
+co10AttrTable :: WbxmlAttrTable
+co10AttrTable =
+    [ (0x00, [ (0x05, "uri", "")
+             , (0x07, "uri", "http://www.")
+             , (0x06, "uri", "http://")
+             , (0x09, "uri", "https://www.")
+             , (0x08, "uri", "https://")
+             ]
+    )]
+
+co10AttrValueTable :: WbxmlAttrValueTable
+co10AttrValueTable =
+    [ (0x00, [ (0x85, ".com/")
+             , (0x86, ".edu/")
+             , (0x87, ".net/")
+             , (0x88, ".org/")
+             ]
+    )]
+
+
+
+
+
+--------------------------------------------------------------------------------
+--    Microsoft ActiveSync (aka AirSync)
+--
+--    Actually the table represent [MS-ASWBXML] 8.0.
+--
+--    The version means the protocol version (e.g. v12.0).
+--    The revision means the revision of the specification document (e.g. r8.0).
+-- 
+--    mainly used by Microsoft Exchange and
+--    modern mobiles from all vendors
+--------------------------------------------------------------------------------
 airSyncTagTable :: WbxmlTagTable
 airSyncTagTable =
     [ (0x00, [ ( 0x05, "Sync") -- since r1.0
@@ -523,7 +637,8 @@ airSyncTagTable =
              , ( 0x27, "ConversationMode") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
              , ( 0x28, "MaxItems") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
              , ( 0x29, "HeartbeatInterval") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
-    ])
+             ])
+
     -- Code Page: Contacts (since v2.5 and r1.0)
     , (0x01, [ ( 0x05, "Anniversary") -- since r1.0
              , ( 0x06, "AssistantName") -- since r1.0
@@ -583,8 +698,8 @@ airSyncTagTable =
              , ( 0x3c, "Picture") -- since r1.0
              , ( 0x3d, "Alias") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
              , ( 0x3e, "WeightedRank") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
+             ])
 
-    ])
     -- Code Page: Email (since v2.5 and r1.0)
     , (0x02, [ ( 0x05, "Attachment") -- not defined in r8.0 but in r1.0, supported by v2.5, v12.0 and v12.1
              , ( 0x06, "Attachments") -- not defined in r8.0 but in r1.0, supported by v2.5, v12.0 and v12.1
@@ -645,15 +760,14 @@ airSyncTagTable =
              , ( 0x3d, "FlagType") -- supported since v12.0
              , ( 0x3e, "CompleteTime") -- supported since v12.0
              , ( 0x3f, "DisallowNewTimeProposal") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
-    ])
-             -- Code Page: AirNotify
-
-    {- There are conflicting version informations.
-     *
-     * r1.0: supported by v2.5, v12.0 and v12.1
-     * r8.0: This code page is no longer in use.
-     * r8.0: Tokens 05 to 17 have been defined.
-     *-}
+             ])
+    
+    -- Code Page: AirNotify
+    -- There are conflicting version informations.
+    --
+    -- r1.0: supported by v2.5, v12.0 and v12.1
+    -- r8.0: This code page is no longer in use.
+    -- r8.0: Tokens 05 to 17 have been defined.
     , (0x03, [ ( 0x05, "Notify") -- not defined in r8.0 but in r1.0, only supported by v2.0 and v2.5
              , ( 0x06, "Notification") -- not defined in r8.0 but in r1.0, supported by v2.5, v12.0 and v12.1
              , ( 0x07, "Version") -- not defined in r8.0 but in r1.0, supported by v2.5, v12.0 and v12.1
@@ -673,7 +787,7 @@ airSyncTagTable =
              , ( 0x15, "Expiry") -- not defined in r8.0 but in r1.0, supported by v2.5, v12.0 and v12.1
              , ( 0x16, "NotifyGUID") -- not defined in r8.0 but in r1.0, supported by v2.5, v12.0 and v12.1
              , ( 0x17, "DeviceFriendlyName") -- not defined in r8.0 but in r1.0, supported by v2.5, v12.0 and v12.1
-    ])
+             ])
 
     -- Code Page: Calendar (since v2.5 and r1.0)
     , (0x04, [ ( 0x05, "TimeZone") -- corrected in libwbxml 0.11.0, supported since v2.5
@@ -723,7 +837,7 @@ airSyncTagTable =
              , ( 0x39, "FirstDayOfWeek") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x3a, "OnlineMeetingConfLink") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x3b, "OnlineMeetingExternalLink") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
-    ])
+             ])
     -- Code Page: Move (since v2.5 and r1.0)
     , (0x05, [ ( 0x05, "MoveItems") -- corrected in libwbxml 0.11.0, supported since v2.5
              , ( 0x06, "Move") -- since r1.0
@@ -733,7 +847,7 @@ airSyncTagTable =
              , ( 0x0a, "Response") -- since r1.0
              , ( 0x0b, "Status") -- since r1.0
              , ( 0x0c, "DstMsgId") -- since r1.0
-    ])
+             ])
 
     -- Code Page: ItemEstimate (since v2.5 and r1.0)
     , (0x06, [ ( 0x05, "GetItemEstimate") -- since r1.0
@@ -746,7 +860,7 @@ airSyncTagTable =
              , ( 0x0c, "Estimate") -- since r1.0
              , ( 0x0d, "Response") -- since r1.0
              , ( 0x0e, "Status") -- since r1.0
-    ])
+             ])
 
              -- Code Page: FolderHierarchy (since v2.5 and r1.0)
     , (0x07, [ ( 0x05, "Folders") -- not defined in r8.0 but in r1.0
@@ -769,7 +883,7 @@ airSyncTagTable =
              , ( 0x16, "FolderSync") -- since r1.0
              , ( 0x17, "Count") -- since r1.0
              , ( 0x18, "Version") -- not defined in r8.0 but in r1.0
-    ])
+             ])
 
     -- Code Page: MeetingResponse (since v2.5 and r1.0)
     , (0x08, [ ( 0x05, "CalendarId") -- changed in r8.0, r1.0: CallID
@@ -782,7 +896,7 @@ airSyncTagTable =
              , ( 0x0c, "UserResponse") -- since r1.0
              , ( 0x0d, "Version") -- not defined in r8.0 but in r1.0
              , ( 0x0e, "InstanceId") -- since r8.0?
-    ])
+             ])
 
     -- Code Page: Tasks (since v2.5 and r1.0)
     , (0x09, [ ( 0x05, "Body") -- not defined in r8.0 but in r1.0, supported by v2.5, v12.0 and v12.1
@@ -820,7 +934,7 @@ airSyncTagTable =
              , ( 0x24, "CalendarType") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
              , ( 0x25, "IsLeapMonth") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
              , ( 0x26, "FirstDayOfWeek") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
-    ])
+             ])
 
     -- Code Page: ResolveRecipients (since v2.5 and r1.0)
     , (0x0a, [ ( 0x05, "ResolveRecipients") -- since r1.0
@@ -848,7 +962,7 @@ airSyncTagTable =
              , ( 0x1b, "MaxSize") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x1c, "Data") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x1d, "MaxPictures") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
-    ])
+             ])
 
     -- Code Page: ValidateCert (since v2.5 and r1.0)
     , (0x0b, [ ( 0x05, "ValidateCert") -- since r1.0
@@ -857,7 +971,7 @@ airSyncTagTable =
              , ( 0x08, "CertificateChain") -- since r1.0
              , ( 0x09, "CheckCRL") -- since r1.0
              , ( 0x0a, "Status") -- since r1.0
-    ])
+             ])
 
     -- Code Page: Contacts2 (since v2.5 and r1.0)
     , (0x0c, [ ( 0x05, "CustomerId") -- since r1.0
@@ -870,7 +984,7 @@ airSyncTagTable =
              , ( 0x0c, "AccountName") -- since r1.0
              , ( 0x0d, "NickName") -- since r1.0
              , ( 0x0e, "MMS") -- since r1.0
-    ])
+             ])
 
     -- Code Page: Ping (since v2.5 and r1.0)
     , (0x0d, [ ( 0x05, "Ping") -- since r1.0
@@ -882,7 +996,7 @@ airSyncTagTable =
              , ( 0x0b, "Id") -- since r1.0
              , ( 0x0c, "Class") -- since r1.0
              , ( 0x0d, "MaxFolders") -- since r1.0
-    ])
+             ])
 
     -- Code Page: Provision (since v2.5 and r1.0)
     , (0x0e, [ ( 0x05, "Provision") -- supported since v2.5
@@ -940,7 +1054,7 @@ airSyncTagTable =
              , ( 0x38, "ApplicationName") -- supported by v2.0 and v2.5
              , ( 0x39, "ApprovedApplicationList") -- supported by v2.0 and v2.5
              , ( 0x3a, "Hash") -- supported by v2.0 and v2.5
-    ])
+             ])
 
     -- Code Page: Search (since v2.5 and r1.0)
     -- Token 0x06 and 0x16 are not supported.
@@ -973,7 +1087,7 @@ airSyncTagTable =
              , ( 0x21, "Picture") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x22, "MaxSize") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x23, "MaxPictures") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
-    ])
+             ])
 
     -- Code Page: GAL (since v2.5 and r1.0)
     , (0x10, [ ( 0x05, "DisplayName") -- since r1.0
@@ -990,7 +1104,7 @@ airSyncTagTable =
              , ( 0x10, "Picture") -- not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x11, "Status") -- not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x12, "Data") -- not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
-    ])
+             ])
 
     -- Code Page: AirSyncBase (since v12.0 and r1.0)
     , (0x11, [ ( 0x05, "BodyPreference") -- since r1.0
@@ -1015,7 +1129,7 @@ airSyncTagTable =
              , ( 0x19, "BodyPartPreference") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1 or 14
              , ( 0x1a, "BodyPart") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1 or 14
              , ( 0x1b, "Status") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1 or 14
-    ])
+             ])
 
     -- Code Page: Settings (since v12.1 and r1.0)
     , (0x12, [ ( 0x05, "Settings") -- since r1.0
@@ -1056,7 +1170,7 @@ airSyncTagTable =
              , ( 0x28, "UserDisplayName") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x29, "SendDisabled") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x2b, "ihsManagementInformation") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
-    ])
+             ])
 
     -- Code Page: DocumentLibrary (since v12.1 and r1.0)
     , (0x13, [ ( 0x05, "LinkId") -- since r1.0
@@ -1067,7 +1181,7 @@ airSyncTagTable =
              , ( 0x0a, "IsHidden") -- since r1.0
              , ( 0x0b, "ContentLength") -- since r1.0
              , ( 0x0c, "ContentType") -- since r1.0
-    ])
+             ])
 
     -- Code Page: ItemOperations (since v12.1 and r1.0)
     , (0x14, [ ( 0x05, "ItemOperations") -- since r1.0
@@ -1091,7 +1205,7 @@ airSyncTagTable =
              , ( 0x17, "DstFldId") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
 --    , ( 0x18, "ConversationId", WBXML_TAG_OPTION_BINARY) -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
              , ( 0x19, "MoveAlways") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
-    ])
+             ])
 
     -- Code Page: ComposeMail (since v14.0 and r8.0?)
     -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
@@ -1109,7 +1223,7 @@ airSyncTagTable =
              , ( 0x11, "ClientId") -- since r8.0?
              , ( 0x12, "Status") -- since r8.0?
              , ( 0x13, "AccountId") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
-    ])
+             ])
 
     -- Code Page: Email2 (since v14.0 and r8.0?)
     -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
@@ -1128,7 +1242,7 @@ airSyncTagTable =
              , ( 0x11, "AccountId") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x12, "FirstDayOfWeek") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
              , ( 0x13, "MeetingMessageType") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
-    ])
+             ])
 
     -- Code Page: Notes (since v14.0 and r8.0?)
     -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
@@ -1137,7 +1251,7 @@ airSyncTagTable =
              , ( 0x07, "LastModifiedDate") -- since r8.0?
              , ( 0x08, "Categories") -- since r8.0?
              , ( 0x09, "Category") -- since r8.0?
-    ])
+             ])
 
     -- Code Page: RightsManagement (since r8.0?)
     -- r8.0: not supported when the MS-ASProtocolVersion header is set to 14.0 or 12.1
@@ -1161,5 +1275,9 @@ airSyncTagTable =
              , ( 0x16, "TemplateDescription") -- since r8.0?
              , ( 0x17, "ContentOwner") -- since r8.0?
              , ( 0x18, "RemoveRightsManagementDistribution" ) -- since r8.0?
-    ])
+             ])
     ]
+
+airSyncAttrTable :: WbxmlAttrTable
+airSyncAttrTable = 
+    [ (0x03, [ (0x05, "Version", "1.1" ) ] ) ] -- not defined in r8.0 but in r1.0, supported by v2.5, v12.0 and v12.1

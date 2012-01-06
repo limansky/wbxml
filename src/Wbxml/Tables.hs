@@ -13,6 +13,8 @@ import Data.Word --(Word8)
 import Data.List (find)
 
 type WbxmlTable = [(Word8, [(Word8, String)])]
+type WbxmlAttrTable = [(Word8, [(Word8, String, String)])]
+type WbxmlAttrValueTable = [(Word8, [(Word8, String)])]
 
 -- |Searches for the tag in provided table by code page and tag code
 findTag :: WbxmlTable   -- ^ table to search the tag
@@ -26,6 +28,172 @@ findCode [] _ = Nothing
 findCode (p:ps) tag = case find (\x -> snd x == tag) (snd p) of
     Just (c, _) -> Just (fst p, c)
     Nothing     -> findCode ps tag
+
+-------------------------------------------------------
+--    WML 1.3 (WAP 1.2.1: "WAP-191-WML-20000219-a.pdf")
+-------------------------------------------------------
+wml13Table :: WbxmlTable
+wml13Table =
+    [ (0x00, [ (0x1c, "a")
+             , (0x22, "anchor") -- WML 1.1
+             , (0x23, "access")
+             , (0x24, "b")
+             , (0x25, "big")
+             , (0x26, "br")
+             , (0x27, "card")
+             , (0x28, "do")
+             , (0x29, "em")
+             , (0x2a, "fieldset")
+             , (0x2b, "go")
+             , (0x2c, "head")
+             , (0x2d, "i")
+             , (0x2e, "img")
+             , (0x2f, "input")
+             , (0x30, "meta")
+             , (0x31, "noop")
+             , (0x20, "p") -- WML 1.1
+             , (0x21, "postfield") -- WML 1.1
+             , (0x1b, "pre")
+             , (0x32, "prev")
+             , (0x33, "onevent")
+             , (0x34, "optgroup")
+             , (0x35, "option")
+             , (0x36, "refresh")
+             , (0x37, "select")
+             , (0x3e, "setvar") -- WML 1.1
+             , (0x38, "small")
+             , (0x39, "strong")
+             , (0x1f, "table") -- WML 1.1
+             , (0x1d, "td") -- WML 1.1
+             , (0x3b, "template")
+             , (0x3c, "timer")
+             , (0x1e, "tr") -- WML 1.1
+             , (0x3d, "u")
+             , (0x3f, "wml")
+             ]
+    )]
+
+wml13AttrTable :: WbxmlAttrTable
+wml13AttrTable =
+    [ (0x00, [ (0x05, "accept-charset", "")
+             , (0x06, "align", "bottom")
+             , (0x07, "align", "center")
+             , (0x08, "align", "left")
+             , (0x09, "align", "middle")
+             , (0x0a, "align", "right")
+             , (0x0b, "align", "top")
+             , (0x0c, "alt", "")
+             , (0x0d, "content", "") 
+             , (0x0f, "domain", "")
+             , (0x10, "emptyok", "false")
+             , (0x11, "emptyok", "true")
+             , (0x12, "format", "")
+             , (0x13, "height", "")
+             , (0x14, "hspace", "")
+             , (0x15, "ivalue", "") -- WML 1.1
+             , (0x16, "iname", "") -- WML 1.1
+             , (0x18, "label", "")
+             , (0x19, "localsrc", "")
+             , (0x1a, "maxlength", "")
+             , (0x1b, "method", "get")
+             , (0x1c, "method", "post")
+             , (0x1d, "mode", "nowrap")
+             , (0x1e, "mode", "wrap")
+             , (0x1f, "multiple", "false")
+             , (0x20, "multiple", "true")
+             , (0x21, "name", "")
+             , (0x22, "newcontext", "false")
+             , (0x23, "newcontext", "true")
+             , (0x24, "onpick", "") -- WML 1.1
+             , (0x25, "onenterbackward", "")
+             , (0x26, "onenterforward", "")
+             , (0x27, "ontimer", "")
+             , (0x28, "optional", "false")
+             , (0x29, "optional", "true")
+             , (0x2a, "path", "")
+             , (0x2e, "scheme", "")
+             , (0x2f, "sendreferer", "false")
+             , (0x30, "sendreferer", "true")
+             , (0x31, "size", "")
+             , (0x32, "src", "")
+             , (0x33, "ordered", "true") -- WML 1.1
+             , (0x34, "ordered", "false") -- WML 1.1
+             , (0x35, "tabindex", "")
+             , (0x36, "title", "")
+             , (0x37, "type", "")
+             , (0x38, "type", "accept")
+             , (0x39, "type", "delete")
+             , (0x3a, "type", "help")
+             , (0x3b, "type", "password")
+             , (0x3c, "type", "onpick")
+             , (0x3d, "type", "onenterbackward")
+             , (0x3e, "type", "onenterforward")
+             , (0x3f, "type", "ontimer")
+             , (0x45, "type", "options")
+             , (0x46, "type", "prev")
+             , (0x47, "type", "reset")
+             , (0x48, "type", "text")
+             , (0x49, "type", "vnd.")
+             , (0x4a, "href", "") -- WML 1.1
+             , (0x4b, "href", "http://") -- WML 1.1
+             , (0x4c, "href", "https://") -- WML 1.1
+             , (0x4d, "value", "")
+             , (0x4e, "vspace", "")
+             , (0x4f, "width", "")
+             , (0x50, "xml:lang", "")
+             , (0x52, "align", "") -- WML 1.1
+             , (0x53, "columns", "") -- WML 1.1
+             , (0x54, "class", "") -- WML 1.1
+             , (0x55, "id", "") -- WML 1.1
+             , (0x56, "forua", "false") -- WML 1.1
+             , (0x57, "forua", "true") -- WML 1.1
+             , (0x58, "src", "http://") -- WML 1.1
+             , (0x59, "src", "https://") -- WML 1.1
+             , (0x5a, "http-equiv", "") -- WML 1.1
+             , (0x5b, "http-equiv", "Content-Type") -- WML 1.1
+             , (0x5c, "content", "application/vnd.wap.wmlc;charset=") -- WML 1.1
+             , (0x5d, "http-equiv", "Expires") -- WML 1.1
+             , (0x5e, "accesskey", "") -- WML 1.2
+             , (0x5f, "enctype", "") -- WML 1.2
+             , (0x60, "enctype", "application/x-www-form-urlencoded") -- WML 1.2
+             , (0x61, "enctype", "multipart/form-data") -- WML 1.2
+             , (0x62, "xml:space", "preserve") -- WML 1.3
+             , (0x63, "xml:space", "default") -- WML 1.3
+             , (0x64, "cache-control", "no-cache") -- WML 1.3
+             ]
+    )]
+
+wml13AttrValueTable =
+    [ (0x00, [ (0x85, ".com/")
+             , (0x86, ".edu/")
+             , (0x87, ".net/")
+             , (0x88, ".org/")
+             , (0x89, "accept")
+             , (0x8a, "bottom")
+             , (0x8b, "clear")
+             , (0x8c, "delete")
+             , (0x8d, "help")
+             , (0x8f, "http://www.")
+             , (0x8e, "http://")
+             , (0x91, "https://www.")
+             , (0x90, "https://")    
+             , (0x93, "middle")
+             , (0x94, "nowrap")
+             , (0x96, "onenterbackward")
+             , (0x97, "onenterforward")
+             , (0x95, "onpick") -- WML 1.1
+             , (0x98, "ontimer")
+             , (0x99, "options")
+             , (0x9a, "password")
+             , (0x9b, "reset")
+             , (0x9d, "text")
+             , (0x9e, "top")
+             , (0x9f, "unknown")
+             , (0xa0, "wrap")
+             , (0xa1, "www.")
+             ]
+    )]
+
 
 airSyncTable :: WbxmlTable
 airSyncTable =

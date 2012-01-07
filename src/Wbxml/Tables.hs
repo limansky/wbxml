@@ -12,9 +12,13 @@ module Wbxml.Tables where
 import Data.Word --(Word8)
 import Data.List (find)
 
+publicIdUnknown = 0x01
+
 type WbxmlTagTable = [(Word8, [(Word8, String)])]
 type WbxmlAttrTable = [(Word8, [(Word8, String, String)])]
 type WbxmlAttrValueTable = [(Word8, [(Word8, String)])]
+type WbxmlTableDef = (Word32, String, WbxmlTagTable, WbxmlAttrTable, WbxmlAttrValueTable)
+type WbxmlTables = [WbxmlTableDef]
 
 -- |Searches for the tag in provided table by code page and tag code
 findTag :: WbxmlTagTable    -- ^ table to search the tag
@@ -29,9 +33,42 @@ findCode (p:ps) tag = case find (\x -> snd x == tag) (snd p) of
     Just (c, _) -> Just (fst p, c)
     Nothing     -> findCode ps tag
 
+findAttr :: WbxmlAttrTable -> Word8 -> Word8 -> Maybe (String, String)
+findAttr t p c = lookup p t >>= find (\(x, _, _) -> x == c) >>= \(_, a, v) -> return (a, v)
+
+findTableByPublicId id = find (\(pid, _, _, _, _) -> pid == id) wbxmlTables
+findTableByXmlPublicId id = find (\(_, xid, _, _, _) -> xid == id) wbxmlTables
+
+wbxmlTables :: WbxmlTables
+wbxmlTables =
+    [ (wml13PublicId, wml13XmlPublicId, wml13TagTable, wml13AttrTable, wml13AttrValueTable)
+    , (wta10PublicId, wta10XmlPublicId, wta10TagTable, wta10AttrTable, [])
+    , (wtaWml12PublicId, wtaWml12XmlPublicId, wtaWml12TagTable, wtawml12AttrTable, wtawml12AttrValueTable)
+    , (channel11PublicId, channel11XmlPublicId, channel11TagTable, channel11AttrTable, [])
+    , (channel12PublicId, channel12XmlPublicId, channel12TagTable, channel12AttrTable, [])
+    , (si10PublicId, si10XmlPublicId, si10TagTable, si10AttrTable, si10AttrValueTable)
+    , (sl10PublicId, sl10XmlPublicId, sl10TagTable, sl10AttrTable, sl10AttrValueTable)
+    , (co10PublicId, co10XmlPublicId, co10TagTable, co10AttrTable, co10AttrValueTable)
+    , (prov11PublicId, prov11XmlPublicId, prov11TagTable, prov11AttrTable, prov11AttrValueTable)
+    , (emn10PublicId, emn10XmlPublicId, emn10TagTable, emn10AttrTable, emn10AttrValueTable)
+    , (drmrel10PublicId, drmrel10XmlPublicId, drmrel10TagTable, drmrel10AttrTable, drmrel10AttrValueTable)
+    , (otaSettingsPublicId, otaSettingsXmlPublicId, otaSettingsTagTable, otaSettingsAttrTable, [])
+    , (airSyncPublicId, airSyncXmlPublicId, airSyncTagTable, airSyncAttrTable, [])
+    , (activeSyncPublicId, activeSyncXmlPublicId, airSyncTagTable, airSyncAttrTable, [])
+    ]
+
 -------------------------------------------------------
 --    WML 1.3 (WAP 1.2.1: "WAP-191-WML-20000219-a.pdf")
 -------------------------------------------------------
+wml10PublicId = 0x02
+wml11PublicId = 0x04
+wml12PublicId = 0x09
+wml13PublicId = 0x0a
+wml10XmlPublicId = "-//WAPFORUM//DTD WML 1.0//EN"
+wml11XmlPublicId = "-//WAPFORUM//DTD WML 1.1//EN"
+wml12XmlPublicId = "-//WAPFORUM//DTD WML 1.2//EN"
+wml13XmlPublicId = "-//WAPFORUM//DTD WML 1.3//EN"
+
 wml13TagTable :: WbxmlTagTable
 wml13TagTable =
     [ (0x00, [ (0x1c, "a")
@@ -197,6 +234,9 @@ wml13AttrValueTable =
 --------------------------------------------
 --    WTA 1.0 (WAP 1.0: "wta-30-apr-98.pdf")
 --------------------------------------------
+wta10PublicId = 0x03
+wta10XmlPublicId = "-//WAPFORUM//DTD WTA 1.0//EN"
+
 wta10TagTable :: WbxmlTagTable
 wta10TagTable =
     [ (0x00, [ (0x05, "EVENT")
@@ -216,6 +256,9 @@ wta10AttrTable =
 ------------------------------------------------
 --    WTA WML 1.2 ("WAP-266-WTA-20010908-a.pdf")
 ------------------------------------------------
+wtaWml12PublicId = 0x0c
+wtaWml12XmlPublicId = "-//WAPFORUM//DTD WTA-WML 1.2//EN"
+
 wtaWml12TagTable :: WbxmlTagTable
 wtaWml12TagTable =
     -- Code Page 0 (WML 1.2)
@@ -418,6 +461,8 @@ wtawml12AttrValueTable =
 ----------------------------------------------------
 --    CHANNEL 1.1 (WAP 1.1: "SPEC-WTA-19990716.pdf")
 ----------------------------------------------------
+channel11PublicId = 0x08
+channel11XmlPublicId = "-//WAPFORUM//DTD CHANNEL 1.1//EN"
 
 channel11TagTable :: WbxmlTagTable
 channel11TagTable =
@@ -451,6 +496,8 @@ channel11AttrTable =
 ------------------------------------------------
 --    CHANNEL 1.2 ("WAP-266-WTA-20010908-a.pdf")
 ------------------------------------------------
+channel12PublicId = publicIdUnknown
+channel12XmlPublicId = "-//WAPFORUM//DTD CHANNEL 1.2//EN"
 
 channel12TagTable :: WbxmlTagTable
 channel12TagTable =
@@ -487,6 +534,9 @@ channel12AttrTable =
 --------------------------------------------------
 --    SI 1.0 ("WAP-167-ServiceInd-20010731-a.pdf")
 --------------------------------------------------
+si10PublicId = 0x05
+si10XmlPublicId = "-//WAPFORUM//DTD SI 1.0//EN"
+
 si10TagTable :: WbxmlTagTable
 si10TagTable =
     [ (0x00, [ (0x05, "si")
@@ -527,6 +577,9 @@ si10AttrValueTable =
 ---------------------------------------------------
 --    SL 1.0 ("WAP-168-ServiceLoad-20010731-a.pdf")
 ---------------------------------------------------
+sl10PublicId = 0x06
+sl10XmlPublicId = "-//WAPFORUM//DTD SL 1.0//EN"
+
 sl10TagTable :: WbxmlTagTable
 sl10TagTable =
     [ (0x00, [ (0x05, "sl") ] ) ]
@@ -556,6 +609,9 @@ sl10AttrValueTable =
 -----------------------------------------------
 --    CO 1.0 ("WAP-175-CacheOp-20010731-a.pdf")
 -----------------------------------------------
+co10PublicId = 0x07
+co10XmlPublicId = "-//WAPFORUM//DTD CO 1.0//EN"
+
 co10TagTable :: WbxmlTagTable
 co10TagTable =
     [ (0x00, [ (0x05, "co")
@@ -583,7 +639,6 @@ co10AttrValueTable =
              ]
     )]
 
-
 ---------------------------------------------------------------
 --    PROV 1.0
 --      WAP 2.0: "WAP-183-PROVCONT-20010724-a.pdf"
@@ -594,6 +649,8 @@ co10AttrValueTable =
 --      There is no new Public ID defined for this new version,
 --      so how should we handle this ??
 ---------------------------------------------------------------
+prov11PublicId = 0x0b
+prov11XmlPublicId = "-//WAPFORUM//DTD PROV 1.0//EN"
 
 prov11TagTable :: WbxmlTagTable
 prov11TagTable =
@@ -819,6 +876,9 @@ prov11AttrValueTable =
 -----------------------------------------------------------------
 --    Email Notification 1.0 ("OMA-Push-EMN-v1_0-20020830-C.PDF")
 -----------------------------------------------------------------
+emn10PublicId = 0x0d
+emn10XmlPublicId = "-//WAPFORUM//DTD EMN 1.0//EN"
+
 emn10TagTable :: WbxmlTagTable
 emn10TagTable = [ (0x00, [ (0x05, "emn") ] ) ]
 
@@ -848,6 +908,9 @@ emn10AttrValueTable =
 ----------------------------------------------------------------------------------------
 --    Rights Expression Language Version 1.0 ("OMA-Download-DRMREL-v1_0-20020913-a.pdf")
 ----------------------------------------------------------------------------------------
+drmrel10PublicId = 0x0e
+drmrel10XmlPublicId = "-//OMA//DTD DRMREL 1.0//EN"
+
 drmrel10TagTable :: WbxmlTagTable
 drmrel10TagTable =
     [ (0x00, [ (0x05, "o-ex:rights")
@@ -891,6 +954,9 @@ drmrel10AttrValueTable =
 --------------------------------------------------------------------
 --    Ericsson / Nokia OTA Settings ("OTA_settings_general_7_0.pdf")
 --------------------------------------------------------------------
+otaSettingsPublicId = publicIdUnknown
+otaSettingsXmlPublicId = ""
+
 otaSettingsTagTable :: WbxmlTagTable
 otaSettingsTagTable =
     [ (0x00, [ (0x05, "CHARACTERISTIC-LIST")
@@ -972,6 +1038,11 @@ otaSettingsAttrTable =
 --    mainly used by Microsoft Exchange and
 --    modern mobiles from all vendors
 --------------------------------------------------------------------------------
+airSyncPublicId = publicIdUnknown
+activeSyncPublicId = publicIdUnknown
+airSyncXmlPublicId = "-//AIRSYNC//DTD AirSync//EN"
+activeSyncXmlPublicId = "-//MICROSOFT//DTD ActiveSync//EN"
+
 airSyncTagTable :: WbxmlTagTable
 airSyncTagTable =
     [ (0x00, [ ( 0x05, "Sync") -- since r1.0

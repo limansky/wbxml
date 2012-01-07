@@ -83,7 +83,7 @@ wml13AttrTable =
              , (0x0a, "align", "right")
              , (0x0b, "align", "top")
              , (0x0c, "alt", "")
-             , (0x0d, "content", "") 
+             , (0x0d, "content", "")
              , (0x0f, "domain", "")
              , (0x10, "emptyok", "false")
              , (0x11, "emptyok", "true")
@@ -176,7 +176,7 @@ wml13AttrValueTable =
              , (0x8f, "http://www.")
              , (0x8e, "http://")
              , (0x91, "https://www.")
-             , (0x90, "https://")    
+             , (0x90, "https://")
              , (0x93, "middle")
              , (0x94, "nowrap")
              , (0x96, "onenterbackward")
@@ -345,7 +345,7 @@ wtawml12AttrTable =
              , (0x5d, "http-equiv", "Expires")
              , (0x5e, "accesskey", "")
              , (0x5f, "enctype", "")
-             , (0x60, "enctype", "application/x-www-form-urlencoded")    
+             , (0x60, "enctype", "application/x-www-form-urlencoded")
              , (0x61, "enctype", "multipart/form-data")
              ])
 
@@ -354,7 +354,7 @@ wtawml12AttrTable =
              , (0x07, "href", "wtai://wp/sd;")
              , (0x08, "href", "wtai://wp/ap;")
              , (0x09, "href", "wtai://ms/ec;")
-             , (0x05, "href", "wtai://")        
+             , (0x05, "href", "wtai://")
              , (0x12, "type", "wtaev-cc/ic")
              , (0x13, "type", "wtaev-cc/cl")
              , (0x14, "type", "wtaev-cc/co")
@@ -395,9 +395,9 @@ wtawml12AttrValueTable =
              , (0x8c, "delete")
              , (0x8d, "help")
              , (0x8f, "http://www.")
-             , (0x8e, "http://")    
+             , (0x8e, "http://")
              , (0x91, "https://www.")
-             , (0x90, "https://")    
+             , (0x90, "https://")
              , (0x93, "middle")
              , (0x94, "nowrap")
              , (0x96, "onenterbackward")
@@ -508,7 +508,7 @@ si10AttrTable =
              , (0x0d, "href", "http://www.")
              , (0x0c, "href", "http://")
              , (0x0f, "href", "https://www.")
-             , (0x0e, "href", "https://")    
+             , (0x0e, "href", "https://")
              , (0x10, "si-expires", "")
              , (0x11, "si-id", "")
              , (0x12, "class", "")
@@ -540,7 +540,7 @@ sl10AttrTable =
              , (0x0a, "href", "http://www.")
              , (0x09, "href", "http://")
              , (0x0c, "href", "https://www.")
-             , (0x0b, "href", "https://")    
+             , (0x0b, "href", "https://")
              ]
     )]
 
@@ -801,7 +801,7 @@ prov11AttrValueTable =
              , (0xe1, "HA") -- OMA
              ])
 
-    -- ADDRTYPE 
+    -- ADDRTYPE
     , (0x01, [ (0x86, "IPV6") -- OMA
              , (0x87, "E164") -- OMA
              , (0x88, "ALPHA") -- OMA
@@ -815,9 +815,149 @@ prov11AttrValueTable =
              , (0x93, "DIGEST") -- OMA
              ])
     ]
-    
 
+-----------------------------------------------------------------
+--    Email Notification 1.0 ("OMA-Push-EMN-v1_0-20020830-C.PDF")
+-----------------------------------------------------------------
+emn10TagTable :: WbxmlTagTable
+emn10TagTable = [ (0x00, [ (0x05, "emn") ] ) ]
 
+emn10AttrTable :: WbxmlAttrTable
+emn10AttrTable =
+    [ (0x00, [ (0x05, "timestamp", "")
+             , (0x06, "mailbox", "")
+             , (0x07, "mailbox", "mailat:")
+             , (0x08, "mailbox", "pop://")
+             , (0x09, "mailbox", "imap://")
+             , (0x0b, "mailbox", "http://www.")
+             , (0x0a, "mailbox", "http://")
+             , (0x0d, "mailbox", "https://www.")
+             , (0x0c, "mailbox", "https://")
+             ]
+    )]
+
+emn10AttrValueTable :: WbxmlAttrValueTable
+emn10AttrValueTable =
+    [ (0x00, [ (0x85, ".com")
+             , (0x86, ".edu")
+             , (0x87, ".net")
+             , (0x88, ".org")
+             ]
+    )]
+
+----------------------------------------------------------------------------------------
+--    Rights Expression Language Version 1.0 ("OMA-Download-DRMREL-v1_0-20020913-a.pdf")
+----------------------------------------------------------------------------------------
+drmrel10TagTable :: WbxmlTagTable
+drmrel10TagTable =
+    [ (0x00, [ (0x05, "o-ex:rights")
+             , (0x06, "o-ex:context")
+             , (0x07, "o-dd:version")
+             , (0x08, "o-dd:uid")
+             , (0x09, "o-ex:agreement")
+             , (0x0A, "o-ex:asset")
+             , (0x0B, "ds:KeyInfo")
+             , (0x0C, "ds:KeyValue")
+             , (0x0D, "o-ex:permission")
+             , (0x0E, "o-dd:play")
+             , (0x0F, "o-dd:display")
+             , (0x10, "o-dd:execute")
+             , (0x11, "o-dd:print")
+             , (0x12, "o-ex:constraint")
+             , (0x13, "o-dd:count")
+             , (0x14, "o-dd:datetime")
+             , (0x15, "o-dd:start")
+             , (0x16, "o-dd:end")
+             , (0x17, "o-dd:interval")
+             ])
+    ]
+
+drmrel10AttrTable :: WbxmlAttrTable
+drmrel10AttrTable =
+    [ (0x00, [ (0x05, "xmlns:o-ex", "")
+             , (0x06, "xmlns:o-dd", "")
+             , (0x07, "xmlns:ds", "")
+             ])
+    ]
+
+drmrel10AttrValueTable :: WbxmlAttrValueTable
+drmrel10AttrValueTable =
+    [ (0x00, [ (0x85, "http://odrl.net/1.1/ODRL-EX")
+             , (0x86, "http://odrl.net/1.1/ODRL-DD")
+             , (0x87, "http://www.w3.org/2000/09/xmldsig#/")
+             ])
+    ]
+
+--------------------------------------------------------------------
+--    Ericsson / Nokia OTA Settings ("OTA_settings_general_7_0.pdf")
+--------------------------------------------------------------------
+otaSettingsTagTable :: WbxmlTagTable
+otaSettingsTagTable =
+    [ (0x00, [ (0x05, "CHARACTERISTIC-LIST")
+             , (0x06, "CHARACTERISTIC")
+             , (0x07, "PARM")
+             ])
+    ]
+
+otaSettingsAttrTable :: WbxmlAttrTable
+otaSettingsAttrTable =
+    -- Characteristic
+    [ (0x00, [ (0x06, "TYPE", "ADDRESS")
+             , (0x07, "TYPE", "URL")
+             , (0x08, "TYPE", "NAME")
+             , (0x10, "NAME", "")
+             , (0x11, "VALUE", "")
+             , (0x12, "NAME", "BEARER")
+             , (0x13, "NAME", "PROXY")
+             , (0x14, "NAME", "PORT")
+             , (0x15, "NAME", "NAME")
+             , (0x16, "NAME", "PROXY_TYPE")
+             , (0x17, "NAME", "URL")
+             , (0x18, "NAME", "PROXY_AUTHNAME")
+             , (0x19, "NAME", "PROXY_AUTHSECRET")
+             , (0x1A, "NAME", "SMS_SMSC_ADDRESS")
+             , (0x1B, "NAME", "USSD_SERVICE_CODE")
+             , (0x1C, "NAME", "GPRS_ACCESSPOINTNAME")
+             , (0x1D, "NAME", "PPP_LOGINTYPE")
+             , (0x1E, "NAME", "PROXY_LOGINTYPE")
+             , (0x21, "NAME", "CSD_DIALSTRING")
+             , (0x28, "NAME", "CSD_CALLTYPE")
+             , (0x29, "NAME", "CSD_CALLSPEED")
+             , (0x22, "NAME", "PPP_AUTHTYPE")
+             , (0x23, "NAME", "PPP_AUTHNAME")
+             , (0x24, "NAME", "PPP_AUTHSECRET")
+             , (0x45, "VALUE", "GSM/CSD")
+             , (0x46, "VALUE", "GSM/SMS")
+             , (0x47, "VALUE", "GSM/USSD")
+             , (0x48, "VALUE", "IS-136/CSD")
+             , (0x49, "VALUE", "GPRS")
+             , (0x60, "VALUE", "9200")
+             , (0x61, "VALUE", "9201")
+             , (0x62, "VALUE", "9202")
+             , (0x63, "VALUE", "9203")
+             , (0x64, "VALUE", "AUTOMATIC")
+             , (0x65, "VALUE", "MANUAL")
+             , (0x6A, "VALUE", "AUTO")
+             , (0x6B, "VALUE", "9600")
+             , (0x6C, "VALUE", "14400")
+             , (0x6D, "VALUE", "19200")
+             , (0x6E, "VALUE", "28800")
+             , (0x6F, "VALUE", "38400")
+             , (0x70, "VALUE", "PAP")
+             , (0x71, "VALUE", "CHAP")
+             , (0x72, "VALUE", "ANALOGUE")
+             , (0x73, "VALUE", "ISDN")
+             , (0x74, "VALUE", "43200")
+             , (0x75, "VALUE", "57600")
+             , (0x76, "VALUE", "MSISDN_NO")
+             , (0x77, "VALUE", "IPV4")
+             , (0x78, "VALUE", "MS_CHAP")
+             , (0x7C, "TYPE", "MMSURL")
+             , (0x7D, "TYPE", "ID")
+             , (0x7E, "NAME", "ISP_NAME")
+             , (0x7F, "TYPE", "BOOKMARK")
+             ])
+    ]
 
 
 
@@ -828,7 +968,7 @@ prov11AttrValueTable =
 --
 --    The version means the protocol version (e.g. v12.0).
 --    The revision means the revision of the specification document (e.g. r8.0).
--- 
+--
 --    mainly used by Microsoft Exchange and
 --    modern mobiles from all vendors
 --------------------------------------------------------------------------------
@@ -995,7 +1135,7 @@ airSyncTagTable =
              , ( 0x3e, "CompleteTime") -- supported since v12.0
              , ( 0x3f, "DisallowNewTimeProposal") -- r8.0: not supported when the MS-ASProtocolVersion header is set to 12.1
              ])
-    
+
     -- Code Page: AirNotify
     -- There are conflicting version informations.
     --
@@ -1513,5 +1653,5 @@ airSyncTagTable =
     ]
 
 airSyncAttrTable :: WbxmlAttrTable
-airSyncAttrTable = 
+airSyncAttrTable =
     [ (0x03, [ (0x05, "Version", "1.1" ) ] ) ] -- not defined in r8.0 but in r1.0, supported by v2.5, v12.0 and v12.1

@@ -1,3 +1,13 @@
+----------------------------------------------------------------------
+-- |
+-- Module       : Main
+-- Copyright    : Mike Limansky, 2011
+-- Licencse     : BSD3
+--
+-- Simple console tool for WBXML to XML converting
+--
+----------------------------------------------------------------------
+
 import Wbxml.Parser
 import Wbxml.SimpleRender
 import qualified Data.ByteString as B
@@ -16,9 +26,8 @@ options :: [OptDescr (Settings -> IO Settings)]
 options = [ Option ['i'] ["input"] (ReqArg inp "FILE") "input file name"
           , Option ['o'] ["output"] (ReqArg out "FILE") "output file name"
           ]
-
-inp a o = return o { input = B.readFile a }
-out a o = return o { output = writeFile a }
+    where inp a o = return o { input = B.readFile a }
+          out a o = return o { output = writeFile a }
 
 defaultSettings = Settings B.getContents putStrLn
 

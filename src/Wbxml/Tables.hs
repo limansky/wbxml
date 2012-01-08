@@ -17,7 +17,7 @@ publicIdUnknown = 0x01
 type WbxmlTagTable = [(Word8, [(Word8, String)])]
 type WbxmlAttrTable = [(Word8, [(Word8, String, String)])]
 type WbxmlAttrValueTable = [(Word8, [(Word8, String)])]
-type WbxmlTableDef = (Word32, String, WbxmlTagTable, WbxmlAttrTable, WbxmlAttrValueTable)
+type WbxmlTableDef = (Word32, String, String, String, WbxmlTagTable, WbxmlAttrTable, WbxmlAttrValueTable)
 type WbxmlTables = [WbxmlTableDef]
 
 -- |Searches for the tag in provided table by code page and tag code
@@ -38,25 +38,25 @@ findAttr t p c = lookup p t >>= find (\(x, _, _) -> x == c) >>= \(_, a, v) -> re
 
 findValue t p c = lookup p t >>= lookup c
 
-findTableByPublicId id = find (\(pid, _, _, _, _) -> pid == id) wbxmlTables
-findTableByXmlPublicId id = find (\(_, xid, _, _, _) -> xid == id) wbxmlTables
+findTableByPublicId id = find (\(pid, _, _, _, _, _, _) -> pid == id) wbxmlTables
+findTableByXmlPublicId id = find (\(_, xid, _, _, _, _, _) -> xid == id) wbxmlTables
 
 wbxmlTables :: WbxmlTables
 wbxmlTables =
-    [ (wml13PublicId, wml13XmlPublicId, wml13TagTable, wml13AttrTable, wml13AttrValueTable)
-    , (wta10PublicId, wta10XmlPublicId, wta10TagTable, wta10AttrTable, [])
-    , (wtaWml12PublicId, wtaWml12XmlPublicId, wtaWml12TagTable, wtawml12AttrTable, wtawml12AttrValueTable)
-    , (channel11PublicId, channel11XmlPublicId, channel11TagTable, channel11AttrTable, [])
-    , (channel12PublicId, channel12XmlPublicId, channel12TagTable, channel12AttrTable, [])
-    , (si10PublicId, si10XmlPublicId, si10TagTable, si10AttrTable, si10AttrValueTable)
-    , (sl10PublicId, sl10XmlPublicId, sl10TagTable, sl10AttrTable, sl10AttrValueTable)
-    , (co10PublicId, co10XmlPublicId, co10TagTable, co10AttrTable, co10AttrValueTable)
-    , (prov11PublicId, prov11XmlPublicId, prov11TagTable, prov11AttrTable, prov11AttrValueTable)
-    , (emn10PublicId, emn10XmlPublicId, emn10TagTable, emn10AttrTable, emn10AttrValueTable)
-    , (drmrel10PublicId, drmrel10XmlPublicId, drmrel10TagTable, drmrel10AttrTable, drmrel10AttrValueTable)
-    , (otaSettingsPublicId, otaSettingsXmlPublicId, otaSettingsTagTable, otaSettingsAttrTable, [])
-    , (airSyncPublicId, airSyncXmlPublicId, airSyncTagTable, airSyncAttrTable, [])
-    , (activeSyncPublicId, activeSyncXmlPublicId, airSyncTagTable, airSyncAttrTable, [])
+    [ (wml13PublicId, wml13XmlPublicId, wml13Root, wml13Dtd, wml13TagTable, wml13AttrTable, wml13AttrValueTable)
+    , (wta10PublicId, wta10XmlPublicId, wta10Root, wta10Dtd, wta10TagTable, wta10AttrTable, [])
+    , (wtaWml12PublicId, wtaWml12XmlPublicId, wtaWml12Root, wtaWml12Dtd, wtaWml12TagTable, wtawml12AttrTable, wtawml12AttrValueTable)
+    , (channel11PublicId, channel11XmlPublicId, channel11Root, channel11Dtd, channel11TagTable, channel11AttrTable, [])
+    , (channel12PublicId, channel12XmlPublicId, channel12Root, channel12Dtd, channel12TagTable, channel12AttrTable, [])
+    , (si10PublicId, si10XmlPublicId, si10Root, si10Dtd, si10TagTable, si10AttrTable, si10AttrValueTable)
+    , (sl10PublicId, sl10XmlPublicId, sl10Root, sl10Dtd, sl10TagTable, sl10AttrTable, sl10AttrValueTable)
+    , (co10PublicId, co10XmlPublicId, co10Root, co10Dtd, co10TagTable, co10AttrTable, co10AttrValueTable)
+    , (prov11PublicId, prov11XmlPublicId, prov11Root, prov11Dtd, prov11TagTable, prov11AttrTable, prov11AttrValueTable)
+    , (emn10PublicId, emn10XmlPublicId, emn10Root, emn10Dtd, emn10TagTable, emn10AttrTable, emn10AttrValueTable)
+    , (drmrel10PublicId, drmrel10XmlPublicId, drmrel10Root, drmrel10Dtd, drmrel10TagTable, drmrel10AttrTable, drmrel10AttrValueTable)
+    , (otaSettingsPublicId, otaSettingsXmlPublicId, otaSettingsRoot, otaSettingsDtd, otaSettingsTagTable, otaSettingsAttrTable, [])
+    , (airSyncPublicId, airSyncXmlPublicId, airSyncRoot, airSyncDtd, airSyncTagTable, airSyncAttrTable, [])
+    , (activeSyncPublicId, activeSyncXmlPublicId, activeSyncRoot, activeSyncDtd, airSyncTagTable, airSyncAttrTable, [])
     ]
 
 -------------------------------------------------------
@@ -70,6 +70,8 @@ wml10XmlPublicId = "-//WAPFORUM//DTD WML 1.0//EN"
 wml11XmlPublicId = "-//WAPFORUM//DTD WML 1.1//EN"
 wml12XmlPublicId = "-//WAPFORUM//DTD WML 1.2//EN"
 wml13XmlPublicId = "-//WAPFORUM//DTD WML 1.3//EN"
+wml13Root = "wml"
+wml13Dtd = "http://www.wapforum.org/DTD/wml13.dtd"
 
 wml13TagTable :: WbxmlTagTable
 wml13TagTable =
@@ -238,6 +240,8 @@ wml13AttrValueTable =
 --------------------------------------------
 wta10PublicId = 0x03
 wta10XmlPublicId = "-//WAPFORUM//DTD WTA 1.0//EN"
+wta10Root = "wtai"
+wta10Dtd = "wtai.dtd"
 
 wta10TagTable :: WbxmlTagTable
 wta10TagTable =
@@ -260,6 +264,8 @@ wta10AttrTable =
 ------------------------------------------------
 wtaWml12PublicId = 0x0c
 wtaWml12XmlPublicId = "-//WAPFORUM//DTD WTA-WML 1.2//EN"
+wtaWml12Root = "wta-wml"
+wtaWml12Dtd = "http://www.wapforum.org/DTD/wta-wml12.dtd"
 
 wtaWml12TagTable :: WbxmlTagTable
 wtaWml12TagTable =
@@ -465,6 +471,8 @@ wtawml12AttrValueTable =
 ----------------------------------------------------
 channel11PublicId = 0x08
 channel11XmlPublicId = "-//WAPFORUM//DTD CHANNEL 1.1//EN"
+channel11Root = "channel"
+channel11Dtd = ""
 
 channel11TagTable :: WbxmlTagTable
 channel11TagTable =
@@ -500,6 +508,8 @@ channel11AttrTable =
 ------------------------------------------------
 channel12PublicId = publicIdUnknown
 channel12XmlPublicId = "-//WAPFORUM//DTD CHANNEL 1.2//EN"
+channel12Root = "channel"
+channel12Dtd = "http://www.wapforum.org/DTD/channel12.dtd"
 
 channel12TagTable :: WbxmlTagTable
 channel12TagTable =
@@ -538,6 +548,8 @@ channel12AttrTable =
 --------------------------------------------------
 si10PublicId = 0x05
 si10XmlPublicId = "-//WAPFORUM//DTD SI 1.0//EN"
+si10Root = "si"
+si10Dtd = "http://www.wapforum.org/DTD/si.dtd"
 
 si10TagTable :: WbxmlTagTable
 si10TagTable =
@@ -581,6 +593,8 @@ si10AttrValueTable =
 ---------------------------------------------------
 sl10PublicId = 0x06
 sl10XmlPublicId = "-//WAPFORUM//DTD SL 1.0//EN"
+sl10Root = "sl"
+sl10Dtd = "http://www.wapforum.org/DTD/sl.dtd"
 
 sl10TagTable :: WbxmlTagTable
 sl10TagTable =
@@ -613,6 +627,8 @@ sl10AttrValueTable =
 -----------------------------------------------
 co10PublicId = 0x07
 co10XmlPublicId = "-//WAPFORUM//DTD CO 1.0//EN"
+co10Root = "co"
+co10Dtd = "http://www.wapforum.org/DTD/co_1.0.dtd"
 
 co10TagTable :: WbxmlTagTable
 co10TagTable =
@@ -653,6 +669,8 @@ co10AttrValueTable =
 ---------------------------------------------------------------
 prov11PublicId = 0x0b
 prov11XmlPublicId = "-//WAPFORUM//DTD PROV 1.0//EN"
+prov11Root = "wap-provisioningdoc"
+prov11Dtd = "http://www.wapforum.org/DTD/prov.dtd"
 
 prov11TagTable :: WbxmlTagTable
 prov11TagTable =
@@ -880,6 +898,8 @@ prov11AttrValueTable =
 -----------------------------------------------------------------
 emn10PublicId = 0x0d
 emn10XmlPublicId = "-//WAPFORUM//DTD EMN 1.0//EN"
+emn10Root = "emn"
+emn10Dtd = "http://www.wapforum.org/DTD/emn.dtd"
 
 emn10TagTable :: WbxmlTagTable
 emn10TagTable = [ (0x00, [ (0x05, "emn") ] ) ]
@@ -912,6 +932,8 @@ emn10AttrValueTable =
 ----------------------------------------------------------------------------------------
 drmrel10PublicId = 0x0e
 drmrel10XmlPublicId = "-//OMA//DTD DRMREL 1.0//EN"
+drmrel10Root = "o-ex:rights"
+drmrel10Dtd = "http://www.openmobilealliance.org/DTD/drmrel10.dtd"
 
 drmrel10TagTable :: WbxmlTagTable
 drmrel10TagTable =
@@ -958,6 +980,8 @@ drmrel10AttrValueTable =
 --------------------------------------------------------------------
 otaSettingsPublicId = publicIdUnknown
 otaSettingsXmlPublicId = ""
+otaSettingsRoot = "CHARACTERISTIC-LIST"
+otaSettingsDtd = "characteristic-list.dtd"
 
 otaSettingsTagTable :: WbxmlTagTable
 otaSettingsTagTable =
@@ -1044,6 +1068,10 @@ airSyncPublicId = publicIdUnknown
 activeSyncPublicId = publicIdUnknown
 airSyncXmlPublicId = "-//AIRSYNC//DTD AirSync//EN"
 activeSyncXmlPublicId = "-//MICROSOFT//DTD ActiveSync//EN"
+airSyncRoot = "AirSync"
+activeSyncRoot = "ActiveSync"
+airSyncDtd = "http://www.microsoft.com/"
+activeSyncDtd = "http://www.microsoft.com/"
 
 airSyncTagTable :: WbxmlTagTable
 airSyncTagTable =

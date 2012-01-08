@@ -13,17 +13,21 @@ module Wbxml.SimpleRender where
 import Wbxml.Tables
 import Wbxml.Types
 import Data.List (intercalate)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, fromJust)
 import qualified Data.ByteString as B
 
 renderWbxml :: WbxmlDocument -> Either String String
 renderWbxml d = case findTableByPublicId pid of
     Nothing -> Left $ "Table not found: pid=" ++ show pid
-    Just (_, _, t, a, av) -> Right $ renderWbxmlWithTable d t a av
+    Just (_, _, _, _, t, a, av) -> Right $ renderWbxmlWithTable d t a av
     where pid = documentPublicId . documentHeader $ d
 
 renderWbxmlWithTable :: WbxmlDocument -> WbxmlTagTable -> WbxmlAttrTable -> WbxmlAttrValueTable -> String
-renderWbxmlWithTable d t a av = renderWbxmlTree (documentRoot d) t a av 0
+renderWbxmlWithTable d t a av = (renderHeader d) ++ renderWbxmlTree (documentRoot d) t a av 0
+
+renderHeader d = "<?xml version=\"1.0\"?>\n" ++ (showDocType . fromJust $ findTableByPublicId pid)
+    where showDocType (i, xid, root, dtd, _, _, _) = "<!DOCTYPE " ++ root ++ " PUBLIC \"" ++ xid ++ "\" \"" ++ dtd ++"\"!>\n"
+          pid = documentPublicId . documentHeader $ d
 
 renderWbxmlTree tag@(WbxmlTag _ _ _ [] "") t ta tav n = (replicate n ' ') ++ fst (renderName t ta tav tag True) ++ "\n"
 renderWbxmlTree tag@(WbxmlTag _ _ _ [] v ) t ta tav n = (replicate n ' ') ++ open ++ v ++ close ++ "\n"

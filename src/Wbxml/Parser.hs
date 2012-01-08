@@ -1,9 +1,10 @@
 ----------------------------------------------------------------------
 -- |
--- Module : WBXML.Tables
--- Copyright : Mike Limansky, 2011
+-- Module       : WBXML.Parser
+-- Copyright    : Mike Limansky, 2011
+-- Licencse     : BSD3
 --
--- Definition of WBXML Tables
+-- Implementation of the WBXML parser using Data.Attoparsec
 --
 ----------------------------------------------------------------------
 
@@ -19,82 +20,13 @@ import Control.Applicative ((<|>))
 import Data.Word
 import Data.Char (chr)
 import Data.Bits
-import Numeric (showHex)
-import Wbxml.Tables
+import Wbxml.Types
 
-data WbxmlVersion = Version1_0 | Version1_1 | Version1_2 | Version1_3
-    deriving (Show, Eq, Enum)
-
-data WbxmlCharset = UTF8
-    deriving (Show, Eq)
-
-data WbxmlHeader = WbxmlHeader {
-          documentVersion :: WbxmlVersion
-        , documentPublicId :: Word32
-        , documentPublicIndex :: Word32
-        , documentCharset :: WbxmlCharset
-        , documentTable :: String
-    } deriving (Show)
-
-data WbxmlTag = WbxmlTag {
-          tagPage :: Word8
-        , tagCode :: Word8
-        , tagAttrs :: [WbxmlAttribute]
-        , tagChildren :: [WbxmlTag]
-        , tagValue :: String
-    }
-
-data WbxmlAttribute = KnownAttribute {
-          attrPage :: Word8
-        , attrCode :: Word8
-        , attrValue :: [WbxmlAttributeValue]
-    }
-                    | UnknownAttrute -- TBD
-    deriving (Show)
-
-data WbxmlAttributeValue = AttrValueString String
-                         | AttrValueKnown Word8 Word8
-                         | AttrValueOpaque B.ByteString
-    deriving (Show)
-
-data TagContent = Tag WbxmlTag 
-                | Str String 
-                deriving (Show)
-
-instance Show WbxmlTag where
-    show (WbxmlTag p c a ch v) = "{0x" ++ (hex p) ++ ", 0x" ++ (hex c)
-                                ++ (showIf (not . null $ a) (", attrs =" ++ show a))
-                                ++ (showIf (not . null $ v) (", value: \"" ++ v ++ "\""))
-                                ++ (showIf (not . null $ ch) (", " ++ show ch))
-                                ++ "}"
-        where hex x = showHex x ""
-              showIf True v  = v
-              showIf False _ = ""
-
-data WbxmlDocument = WbxmlDocument {
-      documentHeader :: WbxmlHeader
-    , documentRoot :: WbxmlTag
-    } deriving (Show)
-
-data ParseState = ParseState {
+newtype ParseState = ParseState {
       codePage :: Word8
     }
 
 type WbxmlParser = StateT ParseState Parser
-
-renderWbxml :: WbxmlDocument -> WbxmlTagTable -> String
-renderWbxml d t = renderWbxmlTree (documentRoot d) t 0
-
-renderWbxmlTree (WbxmlTag p c _ [] "") t n = (replicate n ' ') ++ "<" ++ (tagNameOrCode t p c) ++ "/>\n"
-renderWbxmlTree (WbxmlTag p c _ [] v ) t n = (replicate n ' ') ++ "<" ++ name ++ ">" ++ v ++ "</" ++ name ++ ">\n"
-    where name = tagNameOrCode t p c
-renderWbxmlTree (WbxmlTag p c _ ch "") t n = (replicate n ' ') ++ "<" ++ name ++ ">\n" ++ concat (map (\x -> renderWbxmlTree x t (n + 1)) ch) 
-                                        ++ (replicate n ' ') ++ "</" ++ name ++ ">\n"
-    where name = tagNameOrCode t p c
-
-tagNameOrCode t p c = case findTag t p c of
-    Just s -> s
-    Nothing -> "Unknown(" ++ (show p) ++ ", " ++ (show c) ++")"
 
 tokenSwitchPage = 0x0
 tokenEnd = 0x1

@@ -12,5 +12,5 @@ extra-source-files: README
 Library
     Build-Depends:      base, bytestring, attoparsec, attoparsec-binary, transformers >= 0.2, mtl >= 2
     Default-Language:   Haskell2010
-    Exposed-Modules:    Wbxml.Tables, Wbxml.Parser
+    Exposed-Modules:    Wbxml.Tables, Wbxml.Parser, Wbxml.SimpleRender, Wbxml.Types
     hs-source-dirs:     src

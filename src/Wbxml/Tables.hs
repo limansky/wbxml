@@ -36,6 +36,8 @@ findCode (p:ps) tag = case find (\x -> snd x == tag) (snd p) of
 findAttr :: WbxmlAttrTable -> Word8 -> Word8 -> Maybe (String, String)
 findAttr t p c = lookup p t >>= find (\(x, _, _) -> x == c) >>= \(_, a, v) -> return (a, v)
 
+findValue t p c = lookup p t >>= lookup c
+
 findTableByPublicId id = find (\(pid, _, _, _, _) -> pid == id) wbxmlTables
 findTableByXmlPublicId id = find (\(_, xid, _, _, _) -> xid == id) wbxmlTables
 

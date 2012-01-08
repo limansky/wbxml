@@ -56,7 +56,10 @@ controlTokens = [ tokenSwitchPage, tokenEnd, tokenEntity, tokenStrI, tokenLitera
 
 knownCharsets = [ (106, UTF8) ]
 
-parseWbxml s = parse (runStateT parseDocument (ParseState 0) >>= return . fst) s
+parseWbxml s = case parse (runStateT parseDocument (ParseState 0) >>= return . fst) s of
+    Done _ r   -> Right r
+    Fail _ _ e -> Left $ "Parse error: " ++ e
+    _          -> Left "Parsing was incomplete"
 
 anyMultiByteWord :: Parser Word32
 anyMultiByteWord = do

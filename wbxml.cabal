@@ -7,10 +7,23 @@ Author:             Mike Limansky
 maintainer:         mike.limansky@gmail.com
 Synopsis:           WBXML parsing library
 Build-Type:         Simple
-extra-source-files: README
+Extra-Source-Files: README
 
 Library
-    Build-Depends:      base, bytestring, attoparsec, attoparsec-binary, transformers >= 0.2, mtl >= 2
+    Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2
     Default-Language:   Haskell2010
-    Exposed-Modules:    Wbxml.Tables, Wbxml.Parser, Wbxml.SimpleRender, Wbxml.Types
-    hs-source-dirs:     src
+    Exposed-Modules:    Wbxml.Tables
+                        Wbxml.Parser
+                        Wbxml.SimpleRender
+                        Wbxml.Types
+    Hs-Source-Dirs:     src
+
+Executable wbxmlxml
+    Main-Is:            wbxmlxml.hs
+    Hs-Source-Dirs:     src
+    Default-Language:   Haskell2010
+    Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2
+    Other-Modules:      Wbxml.Tables
+                        Wbxml.Parser
+                        Wbxml.SimpleRender
+                        Wbxml.Types

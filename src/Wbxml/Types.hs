@@ -21,6 +21,9 @@ data WbxmlVersion = Version1_0 | Version1_1 | Version1_2 | Version1_3
 data WbxmlCharset = UTF8
     deriving (Show, Eq)
 
+knownCharsets :: [ (Word32, WbxmlCharset) ]
+knownCharsets = [ (106, UTF8) ]
+
 data WbxmlHeader = WbxmlHeader {
           documentVersion :: WbxmlVersion
         , documentPublicId :: Word32

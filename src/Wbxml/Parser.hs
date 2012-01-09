@@ -54,7 +54,6 @@ controlTokens = [ tokenSwitchPage, tokenEnd, tokenEntity, tokenStrI, tokenLitera
                 , tokenExtT0, tokenExtT1, tokenExtT2, tokenStrT, tokenLiteralA
                 , tokenExt0, tokenExt1, tokenExt2, tokenOpaque, tokenLiteralAc]
 
-knownCharsets = [ (106, UTF8) ]
 
 parseWbxml s = case parse (runStateT parseDocument (ParseState 0) >>= return . fst) s of
     Done _ r   -> Right r
@@ -95,7 +94,7 @@ parseVersion = liftM (toEnum . fromIntegral) (satisfy (\v -> v `elem` supportedV
     where supportedVersions = [2, 3]
 
 parseCharset = do
-    charsetId <-anyMultiByteWord
+    charsetId <- anyMultiByteWord
     case lookup charsetId knownCharsets of
         Just c    -> return c
         otherwise -> fail "Unsupported charset"

@@ -10,12 +10,13 @@ Build-Type:         Simple
 Extra-Source-Files: README
 
 Library
-    Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2
+    Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2, ghc-binary
     Default-Language:   Haskell2010
     Exposed-Modules:    Wbxml.Tables
                         Wbxml.Parser
                         Wbxml.SimpleRender
                         Wbxml.Types
+                        Wbxml.Serializer
     Hs-Source-Dirs:     src
 
 Executable wbxmlxml

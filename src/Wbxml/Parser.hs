@@ -47,7 +47,7 @@ parseIString = do
     word8 tokenStrI
     val <- A.takeWhile (/=0)
     word8 0
-    return $ map (chr . fromIntegral) (B.unpack val)
+    return $ C.unpack val
 
 parseDocument :: WbxmlParser WbxmlDocument
 parseDocument = do

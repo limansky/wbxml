@@ -24,13 +24,17 @@ data WbxmlCharset = UTF8
 knownCharsets :: [ (Word32, WbxmlCharset) ]
 knownCharsets = [ (106, UTF8) ]
 
+data WbxmlPublicId = KnownPublicId Word32 | StringPublicId Word32
+    deriving (Show)
+
 data WbxmlHeader = WbxmlHeader {
           documentVersion :: WbxmlVersion
-        , documentPublicId :: Word32
-        , documentPublicIndex :: Word32
+        , documentPublicId :: WbxmlPublicId
         , documentCharset :: WbxmlCharset
         , documentTable :: String
     } deriving (Show)
+
+getStringFromTable pos doc = takeWhile ( /= '\NUL') . drop pos . documentTable $ documentHeader doc
 
 data WbxmlTag = WbxmlTag {
           tagPage :: Word8

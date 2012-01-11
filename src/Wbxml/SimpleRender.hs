@@ -17,7 +17,7 @@ import Data.Maybe (fromMaybe, fromJust)
 import qualified Data.ByteString as B
 
 renderWbxml :: WbxmlDocument -> Either String String
-renderWbxml d = case findTableByPublicId pid of
+renderWbxml d = case findTables d of
     Nothing -> Left $ "Table not found: pid=" ++ show pid
     Just (_, _, _, _, t, a, av) -> Right $ renderWbxmlWithTable d t a av
     where pid = documentPublicId . documentHeader $ d
@@ -25,9 +25,8 @@ renderWbxml d = case findTableByPublicId pid of
 renderWbxmlWithTable :: WbxmlDocument -> WbxmlTagTable -> WbxmlAttrTable -> WbxmlAttrValueTable -> String
 renderWbxmlWithTable d t a av = (renderHeader d) ++ renderWbxmlTree (documentRoot d) t a av 0
 
-renderHeader d = "<?xml version=\"1.0\"?>\n" ++ (showDocType . fromJust $ findTableByPublicId pid)
+renderHeader d = "<?xml version=\"1.0\"?>\n" ++ (showDocType . fromJust $ findTables d)
     where showDocType (i, xid, root, dtd, _, _, _) = "<!DOCTYPE " ++ root ++ " PUBLIC \"" ++ xid ++ "\" \"" ++ dtd ++"\"!>\n"
-          pid = documentPublicId . documentHeader $ d
 
 renderWbxmlTree tag@(WbxmlTag _ _ _ [] "") t ta tav n = (replicate n ' ') ++ fst (renderName t ta tav tag True) ++ "\n"
 renderWbxmlTree tag@(WbxmlTag _ _ _ [] v ) t ta tav n = (replicate n ' ') ++ open ++ v ++ close ++ "\n"

@@ -58,11 +58,15 @@ parseDocument = do
 -- start        = version publicid charset strtbl
 parseHeader = do
     version <- parseVersion
-    publicId <- anyMultiByteWord
-    publicIndex <- if publicId == 0 then anyMultiByteWord else return 0
+    publicId <- parsePublicId
     charset <- parseCharset
     table <- parseTable
-    return $ WbxmlHeader version publicId publicIndex charset (C.unpack table)
+    return $ WbxmlHeader version publicId charset (C.unpack table)
+
+parsePublicId = do
+    id <- anyMultiByteWord
+    if id /= 0 then return $ KnownPublicId id
+               else anyMultiByteWord >>= return . StringPublicId
 
 parseVersion = liftM (toEnum . fromIntegral) (satisfy (\v -> v `elem` supportedVersions)
                 <?> "Unsupported version")

@@ -31,14 +31,16 @@ writeWbxml (WbxmlDocument h t) = do
     writePage $ tagPage t
     writeTag t
 
-writeHeader (WbxmlHeader v pid pix c t) = do
+writeHeader (WbxmlHeader v pid c t) = do
     putWord8 $ fromIntegral . fromEnum $ v
-    putWord32mb pid
-    when (pid == 0) (putWord32mb pix)
+    writePublicId pid
     putWord32mb (fst . fromJust $ find (\x -> snd x == c) knownCharsets)
     let strblen = length t
     putWord32mb $ fromIntegral strblen
     when (strblen > 0) (putByteString $ C.pack t)
+
+writePublicId (KnownPublicId id) = putWord32mb id
+writePublicId (StringPublicId id) = putWord8 0 >> putWord32mb id
 
 writeTag (WbxmlTag p c a ch v) = do
     (SerializerState cp) <- get

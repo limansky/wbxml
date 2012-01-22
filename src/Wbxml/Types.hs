@@ -34,44 +34,42 @@ data WbxmlHeader = WbxmlHeader {
         , documentTable :: String
     } deriving (Show)
 
-getStringFromTable pos doc = takeWhile ( /= '\NUL') . drop pos . documentTable $ documentHeader doc
+getStringFromTable pos hdr = takeWhile ( /= '\NUL') . drop pos . documentTable $ hdr
 
-data WbxmlTag = WbxmlTag {
+data TagInfo = TagInfo {
           tagPage :: Word8
         , tagCode :: Word8
         , tagAttrs :: [WbxmlAttribute]
-        , tagChildren :: [WbxmlTag]
-        , tagValue :: String
+        , tagName :: String
+        , tagClosed :: Bool
     }
 
 data WbxmlAttribute = KnownAttribute {
           attrPage :: Word8
         , attrCode :: Word8
-        , attrValues :: [WbxmlAttributeValue]
+        , attrName :: String
+        , attrValues :: WbxmlAttributeValue
     }
                     | UnknownAttrute -- TBD
     deriving (Show)
 
 data WbxmlAttributeValue = AttrValueString String
-                         | AttrValueKnown Word8 Word8
-                         | AttrValueOpaque B.ByteString
+                         | AttrValueBinary B.ByteString
     deriving (Show)
 
-data TagContent = Tag WbxmlTag 
+{-data TagContent = Tag WbxmlTag 
                 | Str String 
                 deriving (Show)
-
-instance Show WbxmlTag where
-    show (WbxmlTag p c a ch v) = "{0x" ++ (hex p) ++ ", 0x" ++ (hex c)
+-}
+instance Show TagInfo where
+    show (TagInfo p c a n cl) = "{" ++ n ++ " 0x" ++ (hex p) ++ ", 0x" ++ (hex c)
                                 ++ (showIf (not . null $ a) (", attrs =" ++ show a))
-                                ++ (showIf (not . null $ v) (", value: \"" ++ v ++ "\""))
-                                ++ (showIf (not . null $ ch) (", " ++ show ch))
-                                ++ "}"
+                                ++ (showIf cl "/") ++ "}"
         where hex x = showHex x ""
               showIf True v  = v
               showIf False _ = ""
 
-data WbxmlDocument = WbxmlDocument {
+{-data WbxmlDocument = WbxmlDocument {
       documentHeader :: WbxmlHeader
     , documentRoot :: WbxmlTag
-    } deriving (Show)
+    } deriving (Show)-}

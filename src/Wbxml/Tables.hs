@@ -22,11 +22,11 @@ type WbxmlTableDef = (Word32, String, String, String, WbxmlTagTable, WbxmlAttrTa
 type WbxmlTables = [WbxmlTableDef]
 
 -- |Searches for the tag in provided table by code page and tag code
-findTag :: WbxmlTagTable    -- ^ table to search the tag
+findTag :: WbxmlTableDef    -- ^ table to search the tag
         -> Word8            -- ^ code page
         -> Word8            -- ^ tag code
         -> Maybe String     -- ^ the return value
-findTag t p c = lookup p t >>= lookup c
+findTag (_, _, _, _, t, _, _) p c = lookup p t >>= lookup c
 
 -- |Searches for the tag page and code in proivded tag by tagname
 findCode [] _ = Nothing
@@ -34,14 +34,14 @@ findCode (p:ps) tag = case find (\x -> snd x == tag) (snd p) of
     Just (c, _) -> Just (fst p, c)
     Nothing     -> findCode ps tag
 
-findAttr :: WbxmlAttrTable -> Word8 -> Word8 -> Maybe (String, String)
-findAttr t p c = lookup p t >>= find (\(x, _, _) -> x == c) >>= \(_, a, v) -> return (a, v)
+findAttr :: WbxmlTableDef -> Word8 -> Word8 -> Maybe (String, String)
+findAttr (_, _, _, _, _, t, _) p c = lookup p t >>= find (\(x, _, _) -> x == c) >>= \(_, a, v) -> return (a, v)
 
-findValue t p c = lookup p t >>= lookup c
+findValue (_, _, _, _, _, _, t) p c = lookup p t >>= lookup c
 
-findTables doc = case documentPublicId $ documentHeader doc of
+findTables hdr = case documentPublicId hdr of
     KnownPublicId id  -> findTableByPublicId id
-    StringPublicId ix -> findTableByXmlPublicId $ getStringFromTable (fromIntegral ix) doc
+    StringPublicId ix -> findTableByXmlPublicId $ getStringFromTable (fromIntegral ix) hdr
 
 findTableByPublicId id = find (\(pid, _, _, _, _, _, _) -> pid == id) wbxmlTables
 findTableByXmlPublicId id = find (\(_, xid, _, _, _, _, _) -> xid == id) wbxmlTables

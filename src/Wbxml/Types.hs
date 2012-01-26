@@ -39,8 +39,8 @@ getStringFromTable pos hdr = takeWhile ( /= '\NUL') . drop pos . documentTable $
 data TagInfo = TagInfo {
           tagPage :: Word8
         , tagCode :: Word8
-        , tagAttrs :: [WbxmlAttribute]
         , tagName :: String
+        , tagAttrs :: [WbxmlAttribute]
         , tagClosed :: Bool
     }
 
@@ -48,7 +48,7 @@ data WbxmlAttribute = KnownAttribute {
           attrPage :: Word8
         , attrCode :: Word8
         , attrName :: String
-        , attrValues :: WbxmlAttributeValue
+        , attrValue :: WbxmlAttributeValue
     }
                     | UnknownAttrute -- TBD
     deriving (Show)
@@ -62,7 +62,7 @@ data WbxmlAttributeValue = AttrValueString String
                 deriving (Show)
 -}
 instance Show TagInfo where
-    show (TagInfo p c a n cl) = "{" ++ n ++ " 0x" ++ (hex p) ++ ", 0x" ++ (hex c)
+    show (TagInfo p c n a cl) = "{" ++ n ++ " 0x" ++ (hex p) ++ ", 0x" ++ (hex c)
                                 ++ (showIf (not . null $ a) (", attrs =" ++ show a))
                                 ++ (showIf cl "/") ++ "}"
         where hex x = showHex x ""

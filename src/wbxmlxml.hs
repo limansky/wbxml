@@ -8,7 +8,7 @@
 --
 ----------------------------------------------------------------------
 
-import Wbxml.Parser
+import Wbxml.SAX
 import Wbxml.SimpleRender
 import qualified Data.ByteString as B
 import System.Console.GetOpt
@@ -43,7 +43,4 @@ process s = do
     d <- input s
     case parseWbxml d of
         Left e    -> error e
-        Right doc -> case renderWbxml doc of
-                        Left e -> error e
-                        Right r -> output s r
-
+        Right doc -> output s $ renderWbxml doc

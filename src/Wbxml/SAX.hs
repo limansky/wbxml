@@ -108,8 +108,7 @@ parseElement t = do
 parseSwitchPage = do
     lift $ word8 tokenSwitchPage
     page <- lift anyWord8
-    st <- get
-    put $ st { codePage = fromIntegral page }
+    modify (\st -> st { codePage = fromIntegral page})
     return ()
 
 parseTag t = do
@@ -120,7 +119,7 @@ parseTag t = do
         closed = token .&. 0x40 == 0
     case findTag t page code of
         Just name -> do
-                        let tag = TagInfo page code attrs name closed
+                        let tag = TagInfo page code name attrs closed
                         when (not closed) (put $ ParseState page (tag:st))
                         return $ StartTag tag
         Nothing   -> fail $ "Unknown tag: {" ++ (show page) ++ ", " ++ (show code) ++ "}"

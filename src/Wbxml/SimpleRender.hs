@@ -10,50 +10,29 @@
 
 module Wbxml.SimpleRender where
 
-import Wbxml.Tables
+import Wbxml.SAX
 import Wbxml.Types
-import Data.List (intercalate)
+import Data.List (mapAccumL, intercalate)
 import Data.Maybe (fromMaybe, fromJust)
 import qualified Data.ByteString as B
 
-renderWbxml :: WbxmlDocument -> Either String String
-renderWbxml d = case findTables d of
-    Nothing -> Left $ "Table not found: pid=" ++ show pid
-    Just (_, _, _, _, t, a, av) -> Right $ renderWbxmlWithTable d t a av
-    where pid = documentPublicId . documentHeader $ d
+renderWbxml :: [ParseEvent] -> String
+renderWbxml e = unlines (xmlHeader : (snd $ mapAccumL renderEvent 0 e))
+xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 
-renderWbxmlWithTable :: WbxmlDocument -> WbxmlTagTable -> WbxmlAttrTable -> WbxmlAttrValueTable -> String
-renderWbxmlWithTable d t a av = (renderHeader d) ++ renderWbxmlTree (documentRoot d) t a av 0
+renderEvent n (StartTag (TagInfo _ _ name a c)) =
+    if c then (n,     (replicate n ' ') ++ "<" ++ name ++ (renderAttrs a) ++ "/>")
+         else (n + 1, (replicate n ' ') ++ "<" ++ name ++ (renderAttrs a) ++ ">")
+renderEvent n (EndTag (TagInfo _ _ name _ _)) = 
+              (n - 1, (replicate (n - 1) ' ') ++ "</" ++ name ++ ">")
+renderEvent n (StartText s) = (n, (replicate n ' ') ++ s)
+renderEvent n (StartDoctype) = (n, "<!DOCTYPE !>")
+renderEvent n _ = (n, "")
 
-renderHeader d = "<?xml version=\"1.0\"?>\n" ++ (showDocType . fromJust $ findTables d)
-    where showDocType (i, xid, root, dtd, _, _, _) = "<!DOCTYPE " ++ root ++ " PUBLIC \"" ++ xid ++ "\" \"" ++ dtd ++"\"!>\n"
+renderAttrs [] = ""
+renderAttrs a  = " " ++ (intercalate " " $ map renderAttr a)
 
-renderWbxmlTree tag@(WbxmlTag _ _ _ [] "") t ta tav n = (replicate n ' ') ++ fst (renderName t ta tav tag True) ++ "\n"
-renderWbxmlTree tag@(WbxmlTag _ _ _ [] v ) t ta tav n = (replicate n ' ') ++ open ++ v ++ close ++ "\n"
-    where (open, close) = renderName t ta tav tag False
-renderWbxmlTree tag@(WbxmlTag _ _ _ ch "") t ta tav n = indent ++ open ++ "\n"
-                                        ++ concat (map (\x -> renderWbxmlTree x t ta tav (n + 1)) ch) 
-                                        ++ indent ++ close ++ "\n"
-    where (open, close) = renderName t ta tav tag False
-          indent = replicate n ' '
+renderAttr a = attrName a ++ "=\"" ++ (renderAttrValue $ attrValue a) ++ "\""
 
-renderName t ta tav (WbxmlTag p c a _ _) closed = (open, close)
-    where open  = "<" ++ name ++ attrs ++ r
-          close = if closed then ""   else "</" ++ name ++ ">"
-          r     = if closed then "/>" else ">"
-          attrs = if null a then ""   else " " ++ (renderAttrs ta tav a)
-          name  = tagName t p c
-
-renderAttrs ta tav attrs = intercalate " " $ map (renderAttr ta tav) attrs 
-
-renderAttr ta tav (KnownAttribute p c values) = name ++ "=\"" ++ v ++ "\""
-    where (name, vstart) = attrName ta p c
-          v = vstart ++ (concat $ map (renderValue tav) values)
-
-renderValue _ (AttrValueString s) = s
-renderValue t (AttrValueKnown p c) = attrValue t p c
-renderValue _ (AttrValueOpaque d) = "Opaque: size=" ++ (show $ B.length d)
-
-tagName t p c = fromMaybe ("Tag(" ++ (show p) ++ ", " ++ (show c) ++")") (findTag t p c)
-attrName t p c = fromMaybe (("attr(" ++ (show p) ++ ", " ++ (show c) ++")"), "") (findAttr t p c)
-attrValue t p c = fromMaybe ("val(" ++ (show p) ++ ", " ++ (show c) ++")") (findValue t p c)
+renderAttrValue (AttrValueString s) = s
+renderAttrValue (AttrValueBinary b) = "binary size=" ++ (show $ B.length b)

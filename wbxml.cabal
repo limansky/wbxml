@@ -14,17 +14,17 @@ Library
     Default-Language:   Haskell2010
     Exposed-Modules:    Wbxml.Tables
                         Wbxml.SAX
---                        Wbxml.SimpleRender
+                        Wbxml.SimpleRender
                         Wbxml.Types
 --                        Wbxml.Serializer
     Hs-Source-Dirs:     src
 
---Executable wbxmlxml
---    Main-Is:            wbxmlxml.hs
---    Hs-Source-Dirs:     src
---    Default-Language:   Haskell2010
---    Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2
---    Other-Modules:      Wbxml.Tables
---                        Wbxml.Parser
---                        Wbxml.SimpleRender
---                        Wbxml.Types
+Executable wbxmlxml
+    Main-Is:            wbxmlxml.hs
+    Hs-Source-Dirs:     src
+    Default-Language:   Haskell2010
+    Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2
+    Other-Modules:      Wbxml.Tables
+                        Wbxml.SAX
+                        Wbxml.SimpleRender
+                        Wbxml.Types

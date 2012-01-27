@@ -26,7 +26,8 @@ renderEvent n (StartTag (TagInfo _ _ name a c)) =
 renderEvent n (EndTag (TagInfo _ _ name _ _)) = 
               (n - 1, (replicate (n - 1) ' ') ++ "</" ++ name ++ ">")
 renderEvent n (StartText s) = (n, (replicate n ' ') ++ s)
-renderEvent n (StartDoctype) = (n, "<!DOCTYPE !>")
+renderEvent n (StartDoctype i r d) = (n, "<!DOCTYPE " ++ r 
+                                         ++ " PUBLIC \"" ++ i ++ "\" \"" ++ d ++ "\"!>")
 renderEvent n _ = (n, "")
 
 renderAttrs [] = ""

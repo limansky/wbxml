@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------
 -- |
--- Module       : WBXML.Parser
+-- Module       : WBXML.SAX
 -- Copyright    : Mike Limansky, 2011
 -- Licencse     : BSD3
 --
@@ -36,7 +36,7 @@ data ParseEvent = StartTag TagInfo
                 | EndTag TagInfo
                 | StartText String
                 | StartBinary B.ByteString
-                | StartDoctype
+                | StartDoctype String String String
                 deriving (Show)
 
 parseWbxml s = parseOnly (runStateT parseDocument (ParseState 0 []) >>= return . fst) s
@@ -58,9 +58,9 @@ parseIString = do
 parseDocument :: WbxmlParser [ParseEvent]
 parseDocument = do
     header <- lift parseHeader
-    let (Just t) = findTables header
+    let (Just t@(_, xid, root, dtd, _, _, _)) = findTables header
     body <- parseBody t
-    return $ StartDoctype : body
+    return $ (StartDoctype xid root dtd) : body
 
 -- start        = version publicid charset strtbl
 parseHeader = do

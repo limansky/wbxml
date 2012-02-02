@@ -20,10 +20,10 @@ renderWbxml :: [ParseEvent] -> String
 renderWbxml e = unlines (xmlHeader : (snd $ mapAccumL renderEvent 0 e))
 xmlHeader = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
 
-renderEvent n (StartTag (TagInfo _ _ name a c)) =
+renderEvent n (StartTag (TagInfo _ _ name a) c) =
     if c then (n,     (replicate n ' ') ++ "<" ++ name ++ (renderAttrs a) ++ "/>")
          else (n + 1, (replicate n ' ') ++ "<" ++ name ++ (renderAttrs a) ++ ">")
-renderEvent n (EndTag (TagInfo _ _ name _ _)) = 
+renderEvent n (EndTag (TagInfo _ _ name _)) = 
               (n - 1, (replicate (n - 1) ' ') ++ "</" ++ name ++ ">")
 renderEvent n (StartText s) = (n, (replicate n ' ') ++ s)
 renderEvent n (StartDoctype i r d) = (n, "<!DOCTYPE " ++ r 

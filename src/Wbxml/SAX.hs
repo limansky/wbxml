@@ -32,7 +32,7 @@ data ParseState = ParseState {
 
 type WbxmlParser = StateT ParseState Parser
 
-data ParseEvent = StartTag TagInfo
+data ParseEvent = StartTag TagInfo Bool
                 | EndTag TagInfo
                 | StartText String
                 | StartBinary B.ByteString
@@ -96,7 +96,7 @@ parseTable = do
 -- body     = *pi element *pi
 parseBody :: WbxmlTableDef -> WbxmlParser [ParseEvent]
 parseBody t = do
-    e@(StartTag (TagInfo _ _ _ _ c)) <- parseElement t
+    e@(StartTag _ c) <- parseElement t
     if c then return [e]
          else liftM (e:) (many (parseContent t))
 
@@ -119,9 +119,9 @@ parseTag t = do
         closed = token .&. 0x40 == 0
     case findTag t page code of
         Just name -> do
-                        let tag = TagInfo page code name attrs closed
+                        let tag = TagInfo page code name attrs
                         when (not closed) (put $ ParseState page (tag:st))
-                        return $ StartTag tag
+                        return $ StartTag tag closed
         Nothing   -> fail $ "Unknown tag: {" ++ (show page) ++ ", " ++ (show code) ++ "}"
 
 parseEndTag = do

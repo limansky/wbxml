@@ -19,7 +19,10 @@ data WbxmlVersion = Version1_0 | Version1_1 | Version1_2 | Version1_3
     deriving (Show, Eq, Enum)
 
 data WbxmlCharset = UTF8
-    deriving (Show, Eq)
+    deriving (Eq)
+
+instance Show WbxmlCharset where
+    show UTF8 = "utf-8"
 
 knownCharsets :: [ (Word32, WbxmlCharset) ]
 knownCharsets = [ (106, UTF8) ]
@@ -41,7 +44,6 @@ data TagInfo = TagInfo {
         , tagCode :: Word8
         , tagName :: String
         , tagAttrs :: [WbxmlAttribute]
-        , tagClosed :: Bool
     }
 
 data WbxmlAttribute = KnownAttribute {
@@ -62,9 +64,9 @@ data WbxmlAttributeValue = AttrValueString String
                 deriving (Show)
 -}
 instance Show TagInfo where
-    show (TagInfo p c n a cl) = "{" ++ n ++ " 0x" ++ (hex p) ++ ", 0x" ++ (hex c)
+    show (TagInfo p c n a) = "{" ++ n ++ " 0x" ++ (hex p) ++ ", 0x" ++ (hex c)
                                 ++ (showIf (not . null $ a) (", attrs =" ++ show a))
-                                ++ (showIf cl "/") ++ "}"
+                                ++ "}"
         where hex x = showHex x ""
               showIf True v  = v
               showIf False _ = ""

@@ -9,15 +9,22 @@ Synopsis:           WBXML parsing library
 Build-Type:         Simple
 Extra-Source-Files: README
 
+Flag withHaXml
+    Description:        Support HaXml bindings.
+    Default:            True
+
 Library
     Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2, ghc-binary
     Default-Language:   Haskell2010
+    Hs-Source-Dirs:     src
     Exposed-Modules:    Wbxml.Tables
                         Wbxml.SAX
                         Wbxml.SimpleRender
                         Wbxml.Types
 --                        Wbxml.Serializer
-    Hs-Source-Dirs:     src
+    If flag(withHaXml)
+      Build-Depends:    HaXml
+      Exposed-Modules:  Wbxml.Bindings.HaXml
 
 Executable wbxmlxml
     Main-Is:            wbxmlxml.hs

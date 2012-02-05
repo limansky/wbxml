@@ -8,7 +8,7 @@ where
 import Test.QuickCheck hiding ((.&.))
 import qualified Data.ByteString.Char8 as C
 import qualified Data.ByteString as B
-import Data.Attoparsec (parse, Result(..))
+import Data.Attoparsec (parse, IResult(..))
 import Wbxml.SAX
 import Wbxml.WbxmlDefs
 import Data.Word

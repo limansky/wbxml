@@ -14,7 +14,7 @@ Flag withHaXml
     Default:            True
 
 Library
-    Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2, ghc-binary
+    Build-Depends:      base, bytestring, attoparsec >= 0.10, transformers >= 0.2, mtl >= 2, ghc-binary
     Default-Language:   Haskell2010
     Hs-Source-Dirs:     src
     Exposed-Modules:    Wbxml.Tables

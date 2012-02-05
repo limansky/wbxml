@@ -16,7 +16,7 @@ import Data.Attoparsec as A
 import Control.Monad (liftM, liftM2, when)
 import Control.Monad.Trans (lift)
 import Control.Monad.Trans.State
-import Control.Applicative ((<|>))
+import Control.Applicative ((<|>), many)
 import Data.Word
 import Data.Char (chr)
 import Data.Bits
@@ -98,7 +98,7 @@ parseBody :: WbxmlTableDef -> WbxmlParser [ParseEvent]
 parseBody t = do
     e@(StartTag _ c) <- parseElement t
     if c then return [e]
-         else liftM (e:) (many (parseContent t))
+         else liftM (e:) (many1 (parseContent t))
 
 -- element      = stag [ 1*attribute END ] [ *content END ]
 parseElement t = do
@@ -141,7 +141,7 @@ parseStringContent = parseIString >>= return . StartText
 parseOpaqueContent = parseOpaqueData >>= return . StartBinary
 
 parseAttrs t page = do
-    attrs <- many $ parseAttr t page
+    attrs <- many1 $ parseAttr t page
     word8 tokenEnd
     return attrs
 

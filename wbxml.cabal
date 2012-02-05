@@ -23,7 +23,7 @@ Library
                         Wbxml.Types
 --                        Wbxml.Serializer
     If flag(withHaXml)
-      Build-Depends:    HaXml
+      Build-Depends:    HaXml >= 1.22
       Exposed-Modules:  Wbxml.Bindings.HaXml
 
 Executable wbxmlxml
@@ -40,7 +40,7 @@ Test-Suite wbxmltest
     Type:               exitcode-stdio-1.0
     Hs-Source-Dirs:     test, src
     Default-Language:   Haskell2010
-    Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2, HaXml,
+    Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2, HaXml >= 1.22,
                         test-framework, test-framework-quickcheck2, test-framework-hunit, 
                         QuickCheck, HUnit
     Main-Is:            TestWbxml.hs

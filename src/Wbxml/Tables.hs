@@ -10,7 +10,7 @@
 module Wbxml.Tables where
 
 import Data.Word --(Word8)
-import Data.List (find)
+import Data.List (find, isPrefixOf, maximumBy)
 import Wbxml.Types
 
 publicIdUnknown = 0x01
@@ -29,15 +29,37 @@ findTag :: WbxmlTableDef    -- ^ table to search the tag
 findTag (_, _, _, _, t, _, _) p c = lookup p t >>= lookup c
 
 -- |Searches for the tag page and code in proivded tag by tagname
-findCode [] _ = Nothing
-findCode (p:ps) tag = case find (\x -> snd x == tag) (snd p) of
+findTagCode [] _ = Nothing
+findTagCode (p:ps) tag = case find (\x -> snd x == tag) (snd p) of
     Just (c, _) -> Just (fst p, c)
-    Nothing     -> findCode ps tag
+    Nothing     -> findTagCode ps tag
 
 findAttr :: WbxmlTableDef -> Word8 -> Word8 -> Maybe (String, String)
 findAttr (_, _, _, _, _, t, _) p c = lookup p t >>= find (\(x, _, _) -> x == c) >>= \(_, a, v) -> return (a, v)
 
 findValue (_, _, _, _, _, _, t) p c = lookup p t >>= lookup c
+
+getAttrCodes :: WbxmlAttrTable -> WbxmlAttrValueTable -> String -> String -> Maybe (Word8, Word8, [RawAttributeValue])
+getAttrCodes [] _ _ _ = Nothing
+getAttrCodes (t:ts) tav attr value = case filter (\(_, n, v) -> n == attr && v `isPrefixOf` value) (snd t) of
+    [] -> getAttrCodes ts tav attr value
+    xs -> Just (fst t, code, values)
+            where
+                (code, _, valStart) = maximumBy (\(_, _, v1) (_, _, v2) -> compare (length v1) (length v2)) xs
+                values = getValueCodes (drop (length valStart) value) ""
+                getValueCodes "" "" = []
+                getValueCodes "" s  = [RawValueString s]
+                getValueCodes left@(v:vs) s = case findKnownValue tav left of
+                    Nothing -> getValueCodes vs (v:s)
+                    Just (p, c, l) -> (RawValueString $ reverse s) : (RawValueKnown p c) : getValueCodes (drop l vs) ""
+
+findKnownValue [] _ = Nothing
+findKnownValue (page:pages) v = case filter (\(_, s) -> s `isPrefixOf` v) (snd page) of
+    [] -> findKnownValue pages v
+    xs -> Just (fst page, c, l)
+        where (c, s) = maximumBy (\a b -> compare (length $ snd a) (length $ snd b)) xs
+              l = length s
+
 
 findTables hdr = case documentPublicId hdr of
     KnownPublicId id  -> findTableByPublicId id

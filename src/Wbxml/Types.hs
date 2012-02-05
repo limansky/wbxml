@@ -59,10 +59,10 @@ data WbxmlAttributeValue = AttrValueString String
                          | AttrValueBinary B.ByteString
     deriving (Show)
 
-{-data TagContent = Tag WbxmlTag 
-                | Str String 
-                deriving (Show)
--}
+data RawAttributeValue = RawValueString String
+                       | RawValueKnown Word8 Word8
+                       | RawValueOpaque B.ByteString
+
 instance Show TagInfo where
     show (TagInfo p c n a) = "{" ++ n ++ " 0x" ++ (hex p) ++ ", 0x" ++ (hex c)
                                 ++ (showIf (not . null $ a) (", attrs =" ++ show a))
@@ -71,6 +71,10 @@ instance Show TagInfo where
               showIf True v  = v
               showIf False _ = ""
 
+{-data TagContent = Tag WbxmlTag 
+                | Str String 
+                deriving (Show)
+-}
 {-data WbxmlDocument = WbxmlDocument {
       documentHeader :: WbxmlHeader
     , documentRoot :: WbxmlTag

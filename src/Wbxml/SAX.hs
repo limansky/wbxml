@@ -25,7 +25,8 @@ import Wbxml.WbxmlDefs
 import Wbxml.Tables
 
 data ParseState = ParseState {
-      codePage :: Word8
+      tagCodePage :: Word8
+    , attrCodePage :: Word8
     , tagStack :: [TagInfo]
     }
     deriving (Show)
@@ -39,7 +40,7 @@ data ParseEvent = StartTag TagInfo Bool
                 | StartDoctype String String String
                 deriving (Show)
 
-parseWbxml s = parseOnly (runStateT parseDocument (ParseState 0 []) >>= return . fst) s
+parseWbxml s = parseOnly (runStateT parseDocument (ParseState 0 0 []) >>= return . fst) s
 
 anyMultiByteWord :: Parser Word32
 anyMultiByteWord = do
@@ -102,32 +103,36 @@ parseBody t = do
 
 -- element      = stag [ 1*attribute END ] [ *content END ]
 parseElement t = do
-    skipMany parseSwitchPage
+    skipMany parseTagSwitchPage
     parseTag t
 
-parseSwitchPage = do
+parseTagSwitchPage = parseSwitchPage (\page state -> state { tagCodePage = fromIntegral page})
+
+parseAttrSwitchPage = parseSwitchPage (\page state -> state { attrCodePage = fromIntegral page})
+
+parseSwitchPage f = do
     lift $ word8 tokenSwitchPage
     page <- lift anyWord8
-    modify (\st -> st { codePage = fromIntegral page})
+    modify (f page)
     return ()
 
 parseTag t = do
     token <- lift $ parseNonControlToken
-    (ParseState page st) <- get
-    attrs <- if (token .&. 0x80 /= 0) then lift $ parseAttrs t page else return []
+    (ParseState page apage st) <- get
+    attrs <- if (token .&. 0x80 /= 0) then parseAttrs t else return []
     let code = token .&. 0x3f
         closed = token .&. 0x40 == 0
     case findTag t page code of
         Just name -> do
                         let tag = TagInfo page code name attrs
-                        when (not closed) (put $ ParseState page (tag:st))
+                        when (not closed) (put $ ParseState page apage (tag:st))
                         return $ StartTag tag closed
         Nothing   -> fail $ "Unknown tag: {" ++ (show page) ++ ", " ++ (show code) ++ "}"
 
 parseEndTag = do
     lift $ word8 tokenEnd
-    (ParseState p (t:ts)) <- get
-    put $ ParseState p ts
+    (ParseState p ap (t:ts)) <- get
+    put $ ParseState p ap ts
     return $ EndTag t
 
 -- content      = element | string | extension | entity | pi | opaque
@@ -140,15 +145,17 @@ parseStringContent = parseIString >>= return . StartText
 
 parseOpaqueContent = parseOpaqueData >>= return . StartBinary
 
-parseAttrs t page = do
-    attrs <- many1 $ parseAttr t page
-    word8 tokenEnd
+parseAttrs t = do
+    attrs <- many1 $ parseAttr t
+    lift $ word8 tokenEnd
     return attrs
 
 --  attribute   = attrStart *attrValue
-parseAttr t page = do
-    attr <- parseAttrStart
-    value <- parseAttrValue t page
+parseAttr t = do
+    skipMany parseAttrSwitchPage
+    (ParseState _ page _) <- get
+    attr <- lift $ parseAttrStart
+    value <- lift $ parseAttrValue t page
     case findAttr t page attr of
         Just (name, val) ->
             let v = case value of 

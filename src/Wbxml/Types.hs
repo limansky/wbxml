@@ -37,7 +37,7 @@ data WbxmlHeader = WbxmlHeader {
         , documentTable :: String
     } deriving (Show)
 
-getStringFromTable pos hdr = takeWhile ( /= '\NUL') . drop pos . documentTable $ hdr
+getStringFromTable pos table = takeWhile ( /= '\NUL') . drop pos $ table
 
 data TagInfo = TagInfo {
           tagPage :: Word8
@@ -53,7 +53,6 @@ data WbxmlAttribute = KnownAttribute {
         , attrValue :: WbxmlAttributeValue
     }
                     | UnknownAttrute -- TBD
-    deriving (Show)
 
 data WbxmlAttributeValue = AttrValueString String
                          | AttrValueBinary B.ByteString
@@ -67,9 +66,13 @@ instance Show TagInfo where
     show (TagInfo p c n a) = "{" ++ n ++ " 0x" ++ (hex p) ++ ", 0x" ++ (hex c)
                                 ++ (showIf (not . null $ a) (", attrs =" ++ show a))
                                 ++ "}"
-        where hex x = showHex x ""
-              showIf True v  = v
+        where showIf True v  = v
               showIf False _ = ""
+
+instance Show WbxmlAttribute where
+    show (KnownAttribute p c n v) = "{" ++ n ++ " (0x" ++ (hex p) ++ ", 0x" ++ (hex c) ++ ")=" ++ show v
+
+hex x = showHex x ""
 
 {-data TagContent = Tag WbxmlTag 
                 | Str String 

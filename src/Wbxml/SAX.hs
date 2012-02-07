@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------
 -- |
--- Module       : WBXML.SAX
--- Copyright    : Mike Limansky, 2011
+-- Module       : Wbxml.SAX
+-- Copyright    : Mike Limansky, 2012
 -- Licencse     : BSD3
 --
 -- Implementation of the SAX WBXML parser using Data.Attoparsec
@@ -56,11 +56,17 @@ parseIString = do
     word8 0
     return $ C.unpack val
 
+parseTString table = do
+    word8 tokenStrT
+    idx <- anyMultiByteWord
+    return $ getStringFromTable (fromIntegral idx) table
+
+
 parseDocument :: WbxmlParser [ParseEvent]
 parseDocument = do
     header <- lift parseHeader
     let (Just t@(_, xid, root, dtd, _, _, _)) = findTables header
-    body <- parseBody t
+    body <- parseBody t (documentTable header)
     return $ (StartDoctype xid root dtd) : body
 
 -- start        = version publicid charset strtbl
@@ -95,16 +101,16 @@ parseTable = do
     A.take $ fromIntegral length
 
 -- body     = *pi element *pi
-parseBody :: WbxmlTableDef -> WbxmlParser [ParseEvent]
-parseBody t = do
-    e@(StartTag _ c) <- parseElement t
+parseBody :: WbxmlTableDef -> String -> WbxmlParser [ParseEvent]
+parseBody t strTable = do
+    e@(StartTag _ c) <- parseElement t strTable
     if c then return [e]
-         else liftM (e:) (many1 (parseContent t))
+         else liftM (e:) (many1 (parseContent t strTable))
 
 -- element      = stag [ 1*attribute END ] [ *content END ]
-parseElement t = do
+parseElement t s = do
     skipMany parseTagSwitchPage
-    parseTag t
+    parseTag t s
 
 parseTagSwitchPage = parseSwitchPage (\page state -> state { tagCodePage = fromIntegral page})
 
@@ -116,10 +122,10 @@ parseSwitchPage f = do
     modify (f page)
     return ()
 
-parseTag t = do
+parseTag t s = do
     token <- lift $ parseNonControlToken
     (ParseState page apage st) <- get
-    attrs <- if (token .&. 0x80 /= 0) then parseAttrs t else return []
+    attrs <- if (token .&. 0x80 /= 0) then parseAttrs t s else return []
     let code = token .&. 0x3f
         closed = token .&. 0x40 == 0
     case findTag t page code of
@@ -136,26 +142,26 @@ parseEndTag = do
     return $ EndTag t
 
 -- content      = element | string | extension | entity | pi | opaque
-parseContent t = parseElement t
+parseContent t s = parseElement t s
              <|> parseEndTag
-             <|> lift parseStringContent
+             <|> (lift $ parseStringContent s)
              <|> lift parseOpaqueContent
 
-parseStringContent = parseIString >>= return . StartText
+parseStringContent s = parseIString <|> parseTString s >>= return . StartText
 
 parseOpaqueContent = parseOpaqueData >>= return . StartBinary
 
-parseAttrs t = do
-    attrs <- many1 $ parseAttr t
+parseAttrs t s = do
+    attrs <- many1 $ parseAttr t s
     lift $ word8 tokenEnd
     return attrs
 
 --  attribute   = attrStart *attrValue
-parseAttr t = do
+parseAttr t s = do
     skipMany parseAttrSwitchPage
     (ParseState _ page _) <- get
     attr <- lift $ parseAttrStart
-    value <- lift $ parseAttrValue t page
+    value <- lift $ parseAttrValue t s page
     case findAttr t page attr of
         Just (name, val) ->
             let v = case value of 
@@ -168,9 +174,13 @@ parseAttr t = do
 parseAttrStart = satisfy (\c -> c < 128 && not (c `elem` controlTokens)) -- FIXME unknown attributes are not supported
 
 --  attrValue   = ATTRVALUE | string | extension | entity
-parseAttrValue t page = parseBinaryAttrValue <|> (parseStringAttrValue t page)
+parseAttrValue t s page = parseBinaryAttrValue <|> (parseStringAttrValue t s page)
 
-parseStringAttrValue t page = liftM concat (many $ parseIString <|> (parseKnownAttrValue t page)) >>= return . AttrValueString 
+-- FIXME: looks like it should be many1, but it doesn't work
+parseStringAttrValue t s page = liftM concat (many $ parseIString
+                                                    <|> parseTString s
+                                                    <|> (parseKnownAttrValue t page))
+                              >>= return . AttrValueString
 
 parseKnownAttrValue t page = do 
     token <- satisfy (\c -> c >= 128 && not (c `elem` controlTokens))

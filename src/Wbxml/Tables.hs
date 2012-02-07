@@ -63,7 +63,7 @@ findKnownValue (page:pages) v = case filter (\(_, s) -> s `isPrefixOf` v) (snd p
 
 findTables hdr = case documentPublicId hdr of
     KnownPublicId id  -> findTableByPublicId id
-    StringPublicId ix -> findTableByXmlPublicId $ getStringFromTable (fromIntegral ix) hdr
+    StringPublicId ix -> findTableByXmlPublicId $ getStringFromTable (fromIntegral ix) (documentTable hdr)
 
 findTableByPublicId id = find (\(pid, _, _, _, _, _, _) -> pid == id) wbxmlTables
 findTableByXmlPublicId id = find (\(_, xid, _, _, _, _, _) -> xid == id) wbxmlTables

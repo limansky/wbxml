@@ -105,7 +105,14 @@ parseBody :: WbxmlTableDef -> String -> WbxmlParser [ParseEvent]
 parseBody t strTable = do
     e@(StartTag _ c) <- parseElement t strTable
     if c then return [e]
-         else liftM (e:) (many1 (parseContent t strTable))
+         else liftM (e:) (parseContents t strTable)
+
+parseContents :: WbxmlTableDef -> String -> WbxmlParser [ParseEvent]
+parseContents t s = do
+    c <- parseContent t s
+    (ParseState _ _ tags) <- get
+    if null tags then return [c] 
+                 else liftM (c:) (parseContents t s)
 
 -- element      = stag [ 1*attribute END ] [ *content END ]
 parseElement t s = do
@@ -176,7 +183,6 @@ parseAttrStart = satisfy (\c -> c < 128 && not (c `elem` controlTokens)) -- FIXM
 --  attrValue   = ATTRVALUE | string | extension | entity
 parseAttrValue t s page = parseBinaryAttrValue <|> (parseStringAttrValue t s page)
 
--- FIXME: looks like it should be many1, but it doesn't work
 parseStringAttrValue t s page = liftM concat (many $ parseIString
                                                     <|> parseTString s
                                                     <|> (parseKnownAttrValue t page))

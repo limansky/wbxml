@@ -12,6 +12,7 @@ import Control.Monad.Trans.State
 import Control.Monad.Trans (lift)
 import Wbxml.Types
 import Wbxml.WbxmlDefs
+import Wbxml.DOM
 
 newtype SerializerState = SerializerState {
     currentPage :: Word8
@@ -25,10 +26,11 @@ putWord32mb d = putWord32mb' d 0
     where putWord32mb' v m = when (v >= 0x80) (putWord32mb' (v `shiftR` 7) 0x80) >>
                              (putWord8 $ fromIntegral (v .&. 0x7f .|. m))
 
-writeWbxml :: WbxmlDocument -> PutS
-writeWbxml (WbxmlDocument h t) = do
+writeWbxml :: Document -> PutS
+writeWbxml (Document h t) = do
     lift $ writeHeader h
-    writePage $ tagPage t
+    let p = tagPage $ tagInfo t
+    when (p /= 0) (writePage p)
     writeTag t
 
 writeHeader (WbxmlHeader v pid c t) = do
@@ -42,15 +44,17 @@ writeHeader (WbxmlHeader v pid c t) = do
 writePublicId (KnownPublicId id) = putWord32mb id
 writePublicId (StringPublicId id) = putWord8 0 >> putWord32mb id
 
-writeTag (WbxmlTag p c a ch v) = do
+writeTag (Tag (TagInfo p c _ a) cnt) = do
     (SerializerState cp) <- get
     when (p /= cp) (writePage p)
-    let code = c .|. (if null a then 0 else 0x80) .|. (if null ch && null v then 0 else 0x40)
+    let code = c .|. (if null a then 0 else 0x80) .|. (if null cnt then 0 else 0x40)
     lift $ putWord8 code
     when (not . null $ a) (lift $ writeAttrs a)
-    when (not . null $ ch) (mapM_ writeTag ch)
-    when (not . null $ v) (lift $ writeValue v)
-    when ((not . null $ ch) || (not . null $ v)) (lift $ putWord8 tokenEnd)
+    when (not . null $ cnt) ((mapM_ writeContent cnt) >> (lift $ putWord8 tokenEnd))
+    
+writeContent (CTag tag) = writeTag tag
+writeContent (CString s) = lift $ writeIString s
+writeContent (CBinary b) = lift $ writeOpaque b
 
 writePage :: Word8 -> PutS
 writePage p = do
@@ -61,13 +65,15 @@ writePage p = do
 
 writeAttrs as = mapM_ writeAttr as >> putWord8 0
 
-writeAttr (KnownAttribute _ c v) = do
+writeAttr (KnownAttribute _ c _ v) = do
     putWord8 c
-    mapM_ writeAttrValue v
+    writeAttrValue v
 
-writeAttrValue (AttrValueKnown p c) = putWord8 c
+--writeAttrValue (AttrValueKnown p c) = putWord8 c
 writeAttrValue (AttrValueString s) = writeIString s
-writeAttrValue (AttrValueOpaque d) = do
+writeAttrValue (AttrValueBinary d) = writeOpaque d
+
+writeOpaque d = do
     putWord8 tokenOpaque
     putWord32mb . fromIntegral $ B.length d
     putByteString d

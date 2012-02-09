@@ -21,7 +21,9 @@ Library
                         Wbxml.SAX
                         Wbxml.SimpleRender
                         Wbxml.Types
---                        Wbxml.Serializer
+                        Wbxml.DOM
+                        Wbxml.WbxmlDefs
+                        Wbxml.Serializer
     If flag(withHaXml)
       Build-Depends:    HaXml >= 1.22
       Exposed-Modules:  Wbxml.Bindings.HaXml

@@ -1,14 +1,25 @@
+----------------------------------------------------------------------
+-- |
+-- Module       : Wbxml.Bindings.HaXml
+-- Copyright    : Mike Limansky, 2012
+-- Licencse     : BSD3
+--
+-- Wbxml library bindings to HaXml library
+--
+----------------------------------------------------------------------
+
 module Wbxml.Bindings.HaXml where
 
 import Wbxml.SAX
 import Text.XML.HaXml.Types
 import Wbxml.Types
+import Wbxml.DomBuilder
 
 -- wbxmlToXML :: [ParseEvent] -> Document i
 wbxmlToXML events = Document (Prolog (Just decl) [] doctype []) [] element []
     where decl = XMLDecl ("1.0") (Just $ EncodingDecl "utf-8") Nothing
           doctype = wbxmlDoctype h
-          element = wbxmlRoot c
+          element = makeHaXmlTree c
           (h, c) = break isContent events
 
 isContent (StartTag _ _) = True
@@ -18,19 +29,10 @@ wbxmlDoctype h = case [ (x, r, d) | (StartDoctype x r d) <- h] of
     [] -> Nothing
     [(pid, root, sid)] -> Just $ DTD (N root) (Just $ PUBLIC (PubidLiteral pid) (SystemLiteral sid)) []
 
-wbxmlRoot (e:es) = makeElem tag (makeContent es)
-    where (StartTag tag _) = e
+configHaXml = DomBuilderConfig makeElem (flip CElem ()) (\s -> CString False s ())
+
+makeHaXmlTree = wbxmlRoot configHaXml
 
 makeElem (TagInfo _ _ n as) = Elem (N n) attrs
     where attrs = map (\a -> (N $ attrName a, val $ attrValue a)) as
           val (AttrValueString s) = AttValue [Left s]
-
-makeContent c = fst $ mC [] c
-
--- TODO: extract common part in the "DOM.Helper" module.
-mC c []                            = (c, [])
-mC c ((StartTag tag True):es)      = let c' = c ++ [CElem (makeElem tag []) ()] in mC c' es
-mC c ((StartTag tag False):es)     = let c' = c ++ [CElem (makeElem tag cont) ()] in mC c' rest
-    where (cont, rest) = mC [] es
-mC c ((EndTag _):es)               = (c, es)
-mC c ((StartText s):es)            = let c' = c ++ [CString False s () ] in mC c' es

@@ -20,9 +20,10 @@ Library
     Exposed-Modules:    Wbxml.Tables
                         Wbxml.SAX
                         Wbxml.SimpleRender
+                        Wbxml.WbxmlDefs
                         Wbxml.Types
                         Wbxml.DOM
-                        Wbxml.WbxmlDefs
+                        Wbxml.DomBuilder
                         Wbxml.Serializer
     If flag(withHaXml)
       Build-Depends:    HaXml >= 1.22

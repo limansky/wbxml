@@ -29,4 +29,4 @@ inner_result = Elem (N "tag1") []
     , CElem (Elem (N "tag22") [] [ CString False "Text22" () ]) ()
     ]
 
-tst_inner = assertBool "Failed!" $ wbxmlRoot inner_events == inner_result
+tst_inner = assertBool "Failed!" $ makeHaXmlTree inner_events == inner_result

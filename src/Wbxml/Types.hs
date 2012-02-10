@@ -73,12 +73,3 @@ instance Show WbxmlAttribute where
     show (KnownAttribute p c n v) = "{" ++ n ++ " (0x" ++ (hex p) ++ ", 0x" ++ (hex c) ++ ")=" ++ show v
 
 hex x = showHex x ""
-
-{-data TagContent = Tag WbxmlTag 
-                | Str String 
-                deriving (Show)
--}
-{-data WbxmlDocument = WbxmlDocument {
-      documentHeader :: WbxmlHeader
-    , documentRoot :: WbxmlTag
-    } deriving (Show)-}

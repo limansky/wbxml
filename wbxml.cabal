@@ -9,9 +9,8 @@ Synopsis:           WBXML parsing library
 Build-Type:         Simple
 Extra-Source-Files: README
 
-Flag withHaXml
+Flag HaXml
     Description:        Support HaXml bindings.
-    Default:            True
 
 Library
     Build-Depends:      base, bytestring, attoparsec >= 0.10, transformers >= 0.2, mtl >= 2, ghc-binary
@@ -25,7 +24,7 @@ Library
                         Wbxml.DOM
                         Wbxml.DomBuilder
                         Wbxml.Serializer
-    If flag(withHaXml)
+    If flag(HaXml)
       Build-Depends:    HaXml >= 1.22
       Exposed-Modules:  Wbxml.Bindings.HaXml
 
@@ -43,7 +42,10 @@ Test-Suite wbxmltest
     Type:               exitcode-stdio-1.0
     Hs-Source-Dirs:     test, src
     Default-Language:   Haskell2010
-    Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2, HaXml >= 1.22,
+    Build-Depends:      base, bytestring, attoparsec, transformers >= 0.2, mtl >= 2,
                         test-framework, test-framework-quickcheck2, test-framework-hunit, 
                         QuickCheck, HUnit
     Main-Is:            TestWbxml.hs
+    if flag(HaXml)
+      Build-Depends:    HaXml >= 1.22
+      Cpp-Options:      -DWithHaXml

@@ -35,9 +35,10 @@ type WbxmlParser = StateT ParseState Parser
 
 data ParseEvent = StartTag TagInfo Bool
                 | EndTag TagInfo
-                | StartText String
-                | StartBinary B.ByteString
-                | StartDoctype String String String
+                | Text String
+                | Binary B.ByteString
+                | Doctype String String String
+                | Document WbxmlHeader
                 deriving (Show)
 
 parseWbxml s = parseOnly (runStateT parseDocument (ParseState 0 0 []) >>= return . fst) s
@@ -67,7 +68,7 @@ parseDocument = do
     header <- lift parseHeader
     let (Just t@(_, xid, root, dtd, _, _, _)) = findTables header
     body <- parseBody t (documentTable header)
-    return $ (StartDoctype xid root dtd) : body
+    return $ (Document header) : (Doctype xid root dtd) : body
 
 -- start        = version publicid charset strtbl
 parseHeader = do
@@ -154,9 +155,9 @@ parseContent t s = parseElement t s
              <|> (lift $ parseStringContent s)
              <|> lift parseOpaqueContent
 
-parseStringContent s = parseIString <|> parseTString s >>= return . StartText
+parseStringContent s = parseIString <|> parseTString s >>= return . Text
 
-parseOpaqueContent = parseOpaqueData >>= return . StartBinary
+parseOpaqueContent = parseOpaqueData >>= return . Binary
 
 parseAttrs t s = do
     attrs <- many1 $ parseAttr t s

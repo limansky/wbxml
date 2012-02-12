@@ -13,10 +13,10 @@ import Wbxml.Bindings.HaXml
 
 inner_events = [ StartTag tag1 False
                , StartTag tag21 False
-               , StartText "Text21"
+               , Text "Text21"
                , EndTag tag21
                , StartTag tag22 False
-               , StartText "Text22"
+               , Text "Text22"
                , EndTag tag22
                , EndTag tag1
     ]
@@ -29,4 +29,4 @@ inner_result = Elem (N "tag1") []
     , CElem (Elem (N "tag22") [] [ CString False "Text22" () ]) ()
     ]
 
-tst_inner = assertBool "Failed!" $ makeHaXmlTree inner_events == inner_result
+tst_inner = assertBool "Failed!" $ buildHaXmlTree inner_events == inner_result

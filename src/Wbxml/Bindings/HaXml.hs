@@ -10,28 +10,18 @@
 
 module Wbxml.Bindings.HaXml where
 
-import Wbxml.SAX
 import Text.XML.HaXml.Types
 import Wbxml.Types
 import Wbxml.DomBuilder
 
--- wbxmlToXML :: [ParseEvent] -> Document i
-wbxmlToXML events = Document (Prolog (Just decl) [] doctype []) [] element []
-    where decl = XMLDecl ("1.0") (Just $ EncodingDecl "utf-8") Nothing
-          doctype = wbxmlDoctype h
-          element = makeHaXmlTree c
-          (h, c) = break isContent events
+configHaXml = DomBuilderConfig makeDoc makeElem (flip CElem ()) (\s -> CString False s ())
 
-isContent (StartTag _ _) = True
-isContent _ = False
+makeDoc h pid root sid e = Document (Prolog (Just decl) [] doctype []) [] e []
+    where decl = XMLDecl ("1.0") (Just . EncodingDecl . show $ documentCharset h) Nothing
+          doctype = Just $ DTD (N root) (Just $ PUBLIC (PubidLiteral pid) (SystemLiteral sid)) []
 
-wbxmlDoctype h = case [ (x, r, d) | (StartDoctype x r d) <- h] of
-    [] -> Nothing
-    [(pid, root, sid)] -> Just $ DTD (N root) (Just $ PUBLIC (PubidLiteral pid) (SystemLiteral sid)) []
-
-configHaXml = DomBuilderConfig makeElem (flip CElem ()) (\s -> CString False s ())
-
-makeHaXmlTree = wbxmlRoot configHaXml
+buildHaXmlTree = buildRoot configHaXml
+buildHaXmlDocument = buildDocument configHaXml
 
 makeElem (TagInfo _ _ n as) = Elem (N n) attrs
     where attrs = map (\a -> (N $ attrName a, val $ attrValue a)) as

@@ -26,6 +26,9 @@ data Content = CTag Tag
              | CBinary B.ByteString
     deriving (Show)
 
-configDom = DomBuilderConfig Tag CTag CString
+configDom = DomBuilderConfig makeDoc Tag CTag CString
 
-buildTree = wbxmlRoot configDom
+buildDoc  = buildDocument configDom
+buildTree = buildRoot configDom
+
+makeDoc h _ _ _ t = Document h t

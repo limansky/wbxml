@@ -44,7 +44,7 @@ data TagInfo = TagInfo {
         , tagCode :: Word8
         , tagName :: String
         , tagAttrs :: [WbxmlAttribute]
-    }
+    } deriving (Eq)
 
 data WbxmlAttribute = KnownAttribute {
           attrPage :: Word8
@@ -53,10 +53,11 @@ data WbxmlAttribute = KnownAttribute {
         , attrValue :: WbxmlAttributeValue
     }
                     | UnknownAttrute -- TBD
+    deriving (Eq)
 
 data WbxmlAttributeValue = AttrValueString String
                          | AttrValueBinary B.ByteString
-    deriving (Show)
+    deriving (Eq, Show)
 
 data RawAttributeValue = RawValueString String
                        | RawValueKnown Word8 Word8

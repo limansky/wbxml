@@ -1,3 +1,13 @@
+----------------------------------------------------------------------
+-- |
+-- Module       : TestBindingHaXml
+-- Copyright    : Mike Limansky, 2012
+-- Licencse     : BSD3
+--
+-- Unit tests from Wbxml bindings to HaXml
+--
+----------------------------------------------------------------------
+
 module TestBindingHaXml 
 ( 
     tst_inner

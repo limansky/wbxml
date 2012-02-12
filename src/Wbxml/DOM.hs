@@ -16,15 +16,15 @@ import qualified Data.ByteString as B
 
 data Document = Document WbxmlHeader Tag
 
-data Tag = Tag { tagInfo ::TagInfo
+data Tag = Tag { tagInfo :: TagInfo
                , tagContent :: [Content]
                }
-    deriving (Show)
+    deriving (Eq, Show)
 
 data Content = CTag Tag
              | CString String
              | CBinary B.ByteString
-    deriving (Show)
+    deriving (Eq, Show)
 
 configDom = DomBuilderConfig makeDoc Tag CTag CString
 
